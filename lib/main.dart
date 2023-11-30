@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'Screens/login_screen.dart';
+import 'package:travel_ease_fyp/Screens/intro_screens/welcome.dart';
+import 'presentation/login_screen.dart';
 
 
 void main() async {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginScreen(),
+      home: WelcomeScreen(),
       theme: ThemeData(
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {

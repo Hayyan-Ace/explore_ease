@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:fluttertoast/fluttertoast.dart";
-import 'home_screen.dart';
+import 'package:travel_ease_fyp/Main/main_page.dart';
+import '../Main/home_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -16,6 +17,8 @@ class SignUpScreen extends StatelessWidget {
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
+
+      _auth.isSignInWithEmailLink(email);
 
       if (password != confirmPassword) {
         print("Password is not correct");
@@ -38,7 +41,7 @@ class SignUpScreen extends StatelessWidget {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => MainPage()),
       );
       // Navigate to the home screen or perform other actions
     } on FirebaseAuthException catch (e) {
