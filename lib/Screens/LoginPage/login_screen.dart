@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
 
-              onPressed: () {  /*LoginController.instance.loginUser(_emailController.text.trim(), _passwordController.text.trim())*/},
+              onPressed: () => LoginController.instance.loginUser(_emailController.text.trim(), _passwordController.text.trim()),
               child: Text('Login'),
             ),
             SizedBox(height: 10),

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:travel_ease_fyp/Screens/EmailVerification/email_verification.dart';
+import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
 
 import '../../Models/User/user_model.dart';
@@ -95,18 +96,13 @@ class AuthenticationRepository extends GetxController{
     }
   }
 
-  Future<void> _signInWithEmailAndPassword(String email, String password,) async {
+  Future<void> loginWithEmailAndPassword(String email, String password,) async {
     try {
       await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      // ignore: use_build_context_synchronously
-      /* Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MainPage()),
-      );*/
+      Get.offAll(MainPage());
 
 
     } on FirebaseAuthException catch (e) {
@@ -128,6 +124,7 @@ class AuthenticationRepository extends GetxController{
 
   Future<void> logOut() async{
     await _auth.signOut();
+    Get.offAll(() => LoginScreen());
   }
 
 /*------------------email verification--------------------*/
