@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:travel_ease_fyp/presentation/login_screen.dart';
 
-import '../../presentation/login_screen.dart';
+
+import '../LoginPage/login_screen.dart';
 import 'intro_screen_1.dart';
 import 'intro_screen_2.dart';
 import 'intro_screen_3.dart';

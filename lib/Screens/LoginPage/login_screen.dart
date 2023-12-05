@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:travel_ease_fyp/Main/main_page.dart';
+import 'package:get/get.dart';
+import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
 
 
-import 'signup_screen.dart';
+import '../../Controllers/login_controller.dart';
+import '../SignUpPage/signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -13,42 +15,11 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signInWithEmailAndPassword(BuildContext context) async {
-    try {
-      String email = _emailController.text.trim();
-      String password = _passwordController.text.trim();
-
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // ignore: use_build_context_synchronously
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MainPage()),
-      );
-      print('User signed in: ${userCredential.user!.uid}');
-
-    } on FirebaseAuthException catch (e) {
-
-      String errorMessage = 'Error during login: $e';
-
-      if (e.code == 'user-not-found') {
-        errorMessage = 'User not found. Please check your email or sign up.';
-      } else if (e.code == 'wrong-password') {
-        errorMessage = 'Wrong password provided for that user';
-      } else if (e.code == 'invalid-email') {
-        errorMessage = 'Invalid email syntax.';
-      } else if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
-        errorMessage = 'An internal error has occurred. [ INVALID_LOGIN_CREDENTIALS ]';
-      }
-      Fluttertoast.showToast(msg: errorMessage);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(LoginController());
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Login Bly'),
@@ -70,7 +41,8 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => _signInWithEmailAndPassword(context),
+
+              onPressed: () {  /*LoginController.instance.loginUser(_emailController.text.trim(), _passwordController.text.trim())*/},
               child: Text('Login'),
             ),
             SizedBox(height: 10),

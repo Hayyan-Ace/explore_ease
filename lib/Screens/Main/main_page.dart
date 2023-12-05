@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_ease_fyp/Main/chat_screen.dart';
-import 'package:travel_ease_fyp/Main/profile_page.dart';
+import 'package:travel_ease_fyp/Screens/Main/chat_screen.dart';
+import 'package:travel_ease_fyp/Screens/Main/profile_page.dart';
 
 import 'home_screen.dart';
 
@@ -15,7 +15,7 @@ class _MainPageState extends State<MainPage>{
     List pages = [
     const HomeScreen(),
     const ChatPage(),
-    const ProfilePage()
+      ProfilePage()
   ];
 
   int currentIndexNavBar = 0;

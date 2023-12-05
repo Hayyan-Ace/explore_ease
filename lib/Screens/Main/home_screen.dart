@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Widgets/LargeBoldText.dart';
+import 'package:travel_ease_fyp/Widgets/firestore_slideshow.dart';
 
 
-import '../Widgets/firestore_slideshow.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,7 +32,8 @@ class _HomeScreenState extends State<HomeScreen>{
 
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.indigo.withOpacity(0.5)
+                    color: Colors.indigo.withOpacity(0.5),
+
                   ),
                 )
               ],
