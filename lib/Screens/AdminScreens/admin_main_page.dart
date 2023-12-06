@@ -1,81 +1,93 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../Services/AuthentactionRepository/authentication_repository.dart';
-import '../../Widgets/NavBar_Admin.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Home_Page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Logout_Page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Payment_Page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Tours_Page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Users_Page.dart';
 
-class AdminPanel extends StatefulWidget {
+import '../../Services/AuthentactionRepository/authentication_repository.dart';
+
+class AdminPanelMain extends StatefulWidget{
+  const AdminPanelMain({super.key});
   @override
-  _AdminPanelState createState() => _AdminPanelState();
+  _AdminPanelMainState createState() => _AdminPanelMainState();
 }
 
-class _AdminPanelState extends State<AdminPanel> {
-  int _selectedIndex = 0;
+class _AdminPanelMainState extends State<AdminPanelMain>{
+  List pages = [
+    const AdminHomePage(),
+    const AdminUserPage(),
+    const AdminToursPage(),
+    const AdminPaymentPage(),
+    const AdminLogoutPage(),
 
-  void handleLogout() {
-    // Implement your logout logic here
-    AuthenticationRepository.instance.logOut();
+
+  ];
+
+  int currentIndexNavBar = 0;
+
+  void onTapNavBar(int index) {
+    if (index == pages.length - 1) {
+      // If the "Logout" button is tapped, show confirmation dialog
+      showLogoutConfirmationDialog();
+    } else {
+      setState(() {
+        currentIndexNavBar = index;
+      });
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onTabChange: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        onLogoutPressed: handleLogout,
-      ),
+  void showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Logout Confirmation'),
+          content: Text('Are you sure you want to logout?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Perform logout action
+                AuthenticationRepository.instance.logOut();
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Logout'),
+            ),
+          ],
+        );
+      },
     );
   }
 
-// ... rest of your code
-}
-
-
-
-class Home extends StatefulWidget {
   @override
-  HomeState createState() => new HomeState();
-}
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: pages[currentIndexNavBar],
+      bottomNavigationBar: BottomNavigationBar(
+          showUnselectedLabels: false,
+          currentIndex: currentIndexNavBar,
+          onTap: onTapNavBar,
+          unselectedFontSize: 0,
+          selectedIconTheme: IconThemeData(color: Colors.black), // Set the default color for selected icons
+          unselectedIconTheme: IconThemeData(color: Colors.black), // Set the default color for unselected icons
 
-class HomeState extends State<Home> {
-  @override
-  Widget build(BuildContext context) {
-      return Scaffold(
-      backgroundColor: Colors.white,
-        body: Column(children: <Widget>[
-          SizedBox(
-            height: 110,
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: 16, right: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("EploreEase",),
-                    SizedBox(height: 4,),
-                    Text("Admin",),
-                    IconButton(
-                      alignment: Alignment.topCenter,
-                      icon: Image.asset("assets/notification.png"),
-                      onPressed: () {  },),
 
-                  ],
-                )
-              ],
-            ),
-          ),
-        SizedBox(
-          height: 40,
-        ),
-        ],
-        ),
-      );
+          items: [
+            BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
+            BottomNavigationBarItem(label: 'Users',icon: Icon(Icons.verified_user)),
+            BottomNavigationBarItem(label: 'Tours',icon: Icon(Icons.tour)),
+            BottomNavigationBarItem(label: 'Payments',icon: Icon(Icons.payment)),
+            BottomNavigationBarItem(label: 'Logout',icon: Icon(Icons.logout)),
+          ]
+      ),
+    );
   }
 
 }

@@ -33,7 +33,7 @@ class AuthenticationRepository extends GetxController{
     if(user != null) {
       currentuser = await UserRepository().getUserDetails(user!.uid);
     }
-    currentuser?.isAdmin ?? false == true ? Get.offAll(() => AdminPanel()) : user == null ? Get.offAll(() => const WelcomeScreen()): user.emailVerified ? Get.offAll(() => const MainPage()) : Get.offAll(() => EmailVerificationScreen()  );
+    currentuser?.isAdmin ?? false == true ? Get.offAll(() => AdminPanelMain()) : user == null ? Get.offAll(() => const WelcomeScreen()): user.emailVerified ? Get.offAll(() => const MainPage()) : Get.offAll(() => EmailVerificationScreen()  );
   }
 
   void createUserInFirestore() async {
@@ -101,7 +101,7 @@ class AuthenticationRepository extends GetxController{
 
        currentuser = await UserRepository().getUserDetails(_auth.currentUser!.uid);
        if(currentuser?.isAdmin == true) {
-         Get.offAll(() => AdminPanel());
+         Get.offAll(() => AdminPanelMain());
        }
       else{
          Get.offAll( () => const MainPage());
