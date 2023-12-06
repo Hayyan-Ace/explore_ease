@@ -2,45 +2,64 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_main_page.dart';
 import 'package:travel_ease_fyp/Screens/EmailVerification/email_verification.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
 
 import '../../Models/User/user_model.dart';
 import '../../Screens/intro_screens/welcome.dart';
+import '../UserRepository/user_repository.dart';
 
 class AuthenticationRepository extends GetxController{
   static AuthenticationRepository get instance => Get.find();
-
+  MyAppUser? currentuser ;
   final _auth = FirebaseAuth.instance;
   late final Rx<User?> firebaseUser;
   int checkForInitialStateFunc = 0;
+  late String _email;
+  late String _username;
+
 
   @override
-  void onReady() {
+  void onReady()  {
     firebaseUser =  Rx<User?> (_auth.currentUser);
     firebaseUser.bindStream(_auth.userChanges());
+
     setInitialScreen(firebaseUser.value);
-
   }
 
-
-  setInitialScreen (User? user) {
-    user == null ? Get.offAll(() => const WelcomeScreen()): user.emailVerified ? Get.offAll(() => const MainPage()) : Get.offAll(() => EmailVerificationScreen());
+  setInitialScreen (User? user) async {
+    if(user != null) {
+      currentuser = await UserRepository().getUserDetails(user!.uid);
+    }
+    currentuser?.isAdmin ?? false == true ? Get.offAll(() => AdminPanel()) : user == null ? Get.offAll(() => const WelcomeScreen()): user.emailVerified ? Get.offAll(() => const MainPage()) : Get.offAll(() => EmailVerificationScreen()  );
   }
 
-
+  void createUserInFirestore() async {
+    // Create user document in Firestore
+    await FirebaseFirestore.instance.collection('users').doc(firebaseUser.value!.uid).set({
+      'uid': firebaseUser.value!.uid,
+      'email': _email,
+      'username': _username,
+      'profilePicture': '', // Default or null, update as needed
+      'isAdmin': false, // Default to false, update as needed
+    });
+  }
 
   /*------------------login and sign up--------------------*/
-  Future<MyAppUser?> signUpWithEmailAndPassword(String email, String password, String username) async {
+  Future<void> signUpWithEmailAndPassword(String email, String password, String username) async {
+    _email = email;
+    _username = username;
 
     _auth.isSignInWithEmailLink(email);
-    try {
 
+    try {
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
       firebaseUser.value!.reload();
 
       if (checkForInitialStateFunc == 0) {
@@ -54,29 +73,6 @@ class AuthenticationRepository extends GetxController{
         setInitialScreen(firebaseUser.value);
       }
 
-      Fluttertoast.showToast(msg: 'User signed up: ${firebaseUser.value!.email}',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-      );
-
-
-      // Create user document in Firestore
-      await FirebaseFirestore.instance.collection('users').doc(firebaseUser.value!.uid).set({
-        'uid': firebaseUser.value!.uid,
-        'email': email,
-        'username': username,
-        'profilePicture': '', // Default or null, update as needed
-        'isAdmin': false, // Default to false, update as needed
-      });
-
-
-      return MyAppUser(
-        uid: firebaseUser.value!.uid,
-        email: email,
-        username: username,
-        profilePicture: '',
-        isAdmin: false,
-      );
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Error sign-up service: $e';
       if (e.code == 'weak-password') {
@@ -98,12 +94,18 @@ class AuthenticationRepository extends GetxController{
 
   Future<void> loginWithEmailAndPassword(String email, String password,) async {
     try {
-      await _auth.signInWithEmailAndPassword(
+       await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      Get.offAll(MainPage());
 
+       currentuser = await UserRepository().getUserDetails(_auth.currentUser!.uid);
+       if(currentuser?.isAdmin == true) {
+         Get.offAll(() => AdminPanel());
+       }
+      else{
+         Get.offAll( () => const MainPage());
+       }
 
     } on FirebaseAuthException catch (e) {
 
@@ -140,9 +142,7 @@ class AuthenticationRepository extends GetxController{
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,);
     }
-
   }
-
 
 
 }

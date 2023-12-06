@@ -8,7 +8,7 @@ import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
 
 import '../../Models/User/user_model.dart';
-import '../../Services/AuthentactionRepository/signup_service.dart';
+
 import '../intro_screens/welcome.dart';
 
 

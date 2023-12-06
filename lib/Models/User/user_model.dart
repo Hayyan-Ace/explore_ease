@@ -12,4 +12,15 @@ class MyAppUser {
     required this.profilePicture,
     required this.isAdmin,
   });
+
+
+  factory MyAppUser.fromMap(Map<String, dynamic> map) {
+    return MyAppUser(
+      uid: map['uid'] ?? '',
+      email: map['email'] ?? '',
+      username: map['username'] ?? '',
+      profilePicture: map['profilePicture'] ?? '',
+      isAdmin: map['isAdmin'] ?? false,
+    );
+  }
 }
