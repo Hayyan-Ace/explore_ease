@@ -7,12 +7,13 @@ class SlideItem extends StatefulWidget {
   final String imgUrl;
   final int index;
   final PageController pageController;
-
+  final String tourID;
   SlideItem({
     required this.name,
     required this.imgUrl,
     required this.index,
     required this.pageController,
+    required this.tourID
   });
 
   @override
@@ -53,7 +54,7 @@ class _SlideItemState extends State<SlideItem> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return TourDetailsPage(name: widget.name, imgUrl: widget.imgUrl);
+            return TourDetailsPage(name: widget.name, imgUrl: widget.imgUrl, tourID: widget.tourID);
           },
         );
       },

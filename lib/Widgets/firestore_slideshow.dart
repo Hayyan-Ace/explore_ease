@@ -29,8 +29,10 @@ class SlideshowScreen extends StatelessWidget {
               var slide = slides[index];
               var name = slide['tourName'];
               var imgUrl = slide['imgURL'];
+              var tourID = slide.id;
 
               return SlideItem(
+                tourID: tourID,
                 name: name,
                 imgUrl: imgUrl,
                 index: index,

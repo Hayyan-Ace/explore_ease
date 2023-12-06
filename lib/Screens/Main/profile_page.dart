@@ -49,8 +49,6 @@ class ProfilePage extends StatelessWidget {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => AuthenticationRepository.instance.logOut(),
-                      // Navigate back to the sign-in screen (you can replace it with your desired destination)
-
 
                     child: Text('Sign Out'),
                   ),

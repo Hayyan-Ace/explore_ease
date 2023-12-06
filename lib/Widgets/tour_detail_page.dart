@@ -1,55 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:travel_ease_fyp/Widgets/booking_dialoguebox.dart';
 
 class TourDetailsPage extends StatelessWidget {
   final String name;
   final String imgUrl;
-
-  TourDetailsPage({required this.name, required this.imgUrl});
+  final String tourID;
+  TourDetailsPage({required this.name, required this.imgUrl, required this.tourID});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.4, // Adjust height
-            child: Hero(
+      appBar: AppBar(
+        title: Text('Tour Details'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Hero(
               tag: 'tour_${name.toLowerCase()}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(40.0)),
-                child: Image.network(
-                  imgUrl,
-                  fit: BoxFit.cover,
-                ),
+              child: Image.network(
+                imgUrl,
+                fit: BoxFit.cover,
+                height: 200, // Adjust the height as needed
               ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                // Add more details here like cost, location, etc.
-                SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle booking button click
-                    Navigator.of(context).pop(); // Close the details page
-                  },
-                  child: Text('Book Now'),
-                ),
-              ],
+            SizedBox(height: 20),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => _showBookingDialog(context),
+              child: Text('Book Now'),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  void _showBookingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BookingDialog(
+          tourName: name,
+          tourID: tourID,
+        );
+      },
+    );
+  }
 }
+
