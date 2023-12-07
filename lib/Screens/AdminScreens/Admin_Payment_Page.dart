@@ -34,7 +34,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     });
   }
 
-  Future<void> _showReceiptDialog(String receiptImageUrl) async {
+  Future<void> _showReceiptDialog(String receiptImageUrl, String userUid, int bookingIndex) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -46,9 +46,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
               Image.network(receiptImageUrl),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  // Add code to update the 'verified' status in Firebase
-                  // You can call a function here to update the status
+                onPressed: () async {
+                  await updateVerificationStatus(userUid, bookingIndex);
                   Navigator.of(context).pop();
                 },
                 child: Text('Verify Payment'),
@@ -59,6 +58,25 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       },
     );
   }
+
+
+  Future<void> updateVerificationStatus(String uid, int bookingIndex) async {
+    // Assuming you have a reference to your Firestore collection
+    var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
+
+    // Get the current bookings
+    var currentBookings = (await userReference.get()).data()?['bookings'] as List<dynamic>?;
+
+    if (currentBookings != null) {
+      // Update the 'verified' field within the specified booking
+      currentBookings[bookingIndex]['verified'] = true;
+
+      // Update the 'bookings' field in the Firestore document
+      await userReference.update({'bookings': currentBookings});
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +111,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                     if (bookings[bookingIndex] != null)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
+                        child: // Inside your ListView.builder
+                        GestureDetector(
                           onTap: () {
                             dynamic booking = bookings[bookingIndex];
                             if (booking != null && booking is Map<String, dynamic>) {
@@ -103,11 +122,13 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                                 // Use 'tourUid' as needed
                                 print("Tour UID: $tourUid");
 
-                                // You can now use 'tourUid' to retrieve the receipt image URL from your backend or any other source
-                                String receiptImageUrl = booking['receiptImageUrl'] ?? '';
+                                // Fetch 'receiptImageUrl' and 'userUid' from the booking
+                                String receiptImageUrl = booking['receiptImageUrl'].toString();
+                                String userUid = items[userIndex]["uid"] ?? '';
+
                                 print("Receipt Image URL: $receiptImageUrl");
 
-                                _showReceiptDialog(receiptImageUrl);
+                                _showReceiptDialog(receiptImageUrl, userUid, bookingIndex);
                               } else {
                                 // Handle the case where 'tourUid' is not present
                                 print("Error: 'tourUid' is not present in the booking data");
@@ -117,7 +138,6 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                               print("Error: Booking data is null or not a Map");
                             }
                           },
-
                           child: ListTile(
                             title: Text(
                               'Tour Name: ${bookings[bookingIndex]['tourName']},\nTour ID: ${bookings[bookingIndex]['tourUid']},\nVerified: ${bookings[bookingIndex]['verified']}\n - - - ',

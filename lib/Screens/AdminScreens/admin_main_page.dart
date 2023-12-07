@@ -43,14 +43,14 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Logout Confirmation'),
-          content: Text('Are you sure you want to logout?'),
+          title: const Text('Logout Confirmation'),
+          content: const Text('Are you sure you want to logout?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -58,7 +58,7 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
                 AuthenticationRepository.instance.logOut();
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Logout'),
+              child: const Text('Logout'),
             ),
           ],
         );
@@ -75,11 +75,11 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
           currentIndex: currentIndexNavBar,
           onTap: onTapNavBar,
           unselectedFontSize: 0,
-          selectedIconTheme: IconThemeData(color: Colors.black), // Set the default color for selected icons
-          unselectedIconTheme: IconThemeData(color: Colors.black), // Set the default color for unselected icons
+          selectedIconTheme: const IconThemeData(color: Colors.black), // Set the default color for selected icons
+          unselectedIconTheme: const IconThemeData(color: Colors.black), // Set the default color for unselected icons
+          selectedItemColor: Colors.black, // Set the font color for the selected item
 
-
-          items: [
+          items: const [
             BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
             BottomNavigationBarItem(label: 'Users',icon: Icon(Icons.verified_user)),
             BottomNavigationBarItem(label: 'Tours',icon: Icon(Icons.tour)),
