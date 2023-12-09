@@ -17,7 +17,7 @@ class AdminPanelMain extends StatefulWidget{
 class _AdminPanelMainState extends State<AdminPanelMain>{
   List pages = [
     const AdminHomePage(),
-    const AdminUserPage(),
+    const AdminUsersPage(),
     const AdminToursPage(),
     const AdminPaymentPage(),
     const AdminLogoutPage(),
@@ -81,7 +81,7 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
 
           items: const [
             BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
-            BottomNavigationBarItem(label: 'Users',icon: Icon(Icons.verified_user)),
+            BottomNavigationBarItem(label: 'Users',icon: Icon(Icons.person)),
             BottomNavigationBarItem(label: 'Tours',icon: Icon(Icons.tour)),
             BottomNavigationBarItem(label: 'Payments',icon: Icon(Icons.payment)),
             BottomNavigationBarItem(label: 'Logout',icon: Icon(Icons.logout)),
