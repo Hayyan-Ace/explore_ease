@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'User_Detail_Widget.dart';
+
 class AdminUsersPage extends StatefulWidget {
   const AdminUsersPage({Key? key}) : super(key: key);
 
@@ -60,10 +62,24 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     _fetchUserData(); // Refresh the list after deletion
   }
 
+  _showUserDetails(String userId, Map<String, dynamic> userData) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return UserDetailWidget(
+          userData: userData,
+          onDeletePressed: () {
+            _deleteUser(userId);
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     int totalUsers = items.length;
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -126,54 +142,42 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             Column(
               children: isLoaded
                   ? items.map((item) {
-                return GestureDetector(
-                  onTap: () {
-                    _showDeleteOptions(item["uid"]);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 15, bottom: 20),
-                    child: Row(
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListTile(
+                    onTap: () {
+                      _showUserDetails(item["uid"], item);
+                    },
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.lightGreenAccent,
+                        child: Icon(Icons.person),
+                      ),
+                    ),
+                    title: Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Icon(Icons.person, size: 50,),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    item["username"] + " " ?? "not given",
-                                    style: Theme.of(context).textTheme.headline6?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  if (item["isAdmin"] == true)
-                                    Icon(
-                                      Icons.check_circle,
-                                      color: Colors.green,
-                                      size: 22,
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                item["uid"],
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.copyWith(height: 1.5),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 5),
-                            ],
+                        Text(
+                          item["username"] + " " ?? "not given",
+                          style: Theme.of(context).textTheme.headline6?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                        )
+                        ),
+                        if (item["isAdmin"] == true)
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 22,
+                          ),
+                        const SizedBox(width: 8),
                       ],
+                    ),
+                    subtitle: Text(
+                      item["uid"],
+                      style: Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 );
@@ -186,3 +190,5 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     );
   }
 }
+
+

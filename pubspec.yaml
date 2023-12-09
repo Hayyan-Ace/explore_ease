@@ -31,8 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_auth: ^4.14.0
-  firebase_core: ^2.22.0
+  firebase_core: ^2.24.2
   cloud_firestore: ^4.13.2
+  firebase_storage: ^11.5.5
   fluttertoast: ^8.2.4
   get: ^4.6.6
   image_picker: ^1.0.4
@@ -42,7 +43,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   smooth_page_indicator: ^1.0.0
   google_nav_bar: ^5.0.6
-  firebase_storage: ^11.5.3
   lottie: ^2.7.0
 
 
