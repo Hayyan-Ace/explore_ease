@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
-import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -15,6 +13,8 @@ class SignUpScreen extends StatelessWidget {
 
 
   late Color myColor;
+
+  SignUpScreen({super.key});
 
 
   @override
@@ -32,44 +32,44 @@ class SignUpScreen extends StatelessWidget {
             children: [
               TextField(
                 controller: _fullNameController,
-                decoration: InputDecoration(labelText: 'Full Name'),
+                decoration: const InputDecoration(labelText: 'Full Name'),
               ),
               SizedBox(height: 10),
               TextField(
                 controller: _userNameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: const InputDecoration(labelText: 'Username'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
+                decoration: const InputDecoration(labelText: 'Confirm Password'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _cnicController,
-                decoration: InputDecoration(labelText: 'CNIC (13 digits)'),
+                decoration: const InputDecoration(labelText: 'CNIC (13 digits)'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _phoneNoController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Phone No',
                   prefixText: '+92 ',
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: const StadiumBorder(),
@@ -81,7 +81,7 @@ class SignUpScreen extends StatelessWidget {
                 onPressed: () => _registerUser(),
                 child: const Text('Sign Up', style: TextStyle(color: Colors.black87)),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
