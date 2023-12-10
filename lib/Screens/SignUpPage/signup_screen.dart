@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 
@@ -94,7 +96,47 @@ class SignUpScreen extends StatelessWidget {
   }
 
   Future<void> _registerUser() async {
+    // Validate CNIC (13 digits)
+    if (_cnicController.text.trim().length != 13) {
+      showToast("Invalid CNIC. It must be 13 digits.");
+      return;
+    }
+
+    // Validate phone number (10 digits after the prefix)
+    if (_phoneNoController.text.trim().length != 10) {
+      showToast("Invalid phone number. It must be 10 digits after the prefix.");
+      return;
+    }
+
+    // Validate password and confirm password
+    if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
+      showToast("Password and confirm password do not match.");
+      return;
+    }
+
+    // Validate email format
+    final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+    if (!emailRegex.hasMatch(_emailController.text.trim())) {
+      showToast("Invalid email format.");
+      return;
+    }
+
     try {
+      // Validate unique email and username
+      final isEmailUnique = await AuthenticationRepository.instance.isEmailUnique(_emailController.text.trim());
+      final isUsernameUnique = await AuthenticationRepository.instance.isUsernameUnique(_userNameController.text.trim());
+
+      if (!isEmailUnique) {
+        showToast("Email is already in use.");
+        return;
+      }
+
+      if (!isUsernameUnique) {
+        showToast("Username is already taken.");
+        return;
+      }
+
+      // All checks passed, proceed with user registration
       await AuthenticationRepository.instance.signUpWithEmailAndPassword(
         _emailController.text.trim(),
         _passwordController.text.trim(),
@@ -105,7 +147,16 @@ class SignUpScreen extends StatelessWidget {
       );
     } catch (e) {
       // Handle registration errors here (e.g., display an error message)
-      print("Error during registration: $e");
+      showToast("Error during registration: $e");
     }
   }
+
+  void showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
+
 }
