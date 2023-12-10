@@ -6,14 +6,15 @@ import 'package:travel_ease_fyp/Screens/SignUpPage/signup_screen.dart';
 import 'package:travel_ease_fyp/Screens/intro_screens/welcome.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp().then((value) => Get.put(AuthenticationRepository()));
 
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: MyApp(),
+  ));
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

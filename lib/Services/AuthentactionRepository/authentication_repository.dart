@@ -26,14 +26,10 @@ class AuthenticationRepository extends GetxController {
   late String _phoneNo;
 
   // Define the users collection
-  late CollectionReference _usersCollection = FirebaseFirestore.instance.collection('users');
+  late CollectionReference _usersCollection =
+  FirebaseFirestore.instance.collection('users');
 
-  AuthenticationRepository() : _usersCollection = FirebaseFirestore.instance.collection('users') {
-    firebaseUser = Rx<User?>(_auth.currentUser);
-    firebaseUser.bindStream(_auth.userChanges());
 
-    setInitialScreen(firebaseUser.value);
-  }
 
   @override
   void onReady() {
@@ -53,12 +49,9 @@ class AuthenticationRepository extends GetxController {
           : user.emailVerified
           ? Get.offAll(() => const MainPage())
           : Get.offAll(() => EmailVerificationScreen());
-    }
-    else
-    {
+    } else {
       Get.offAll(() => const WelcomeScreen());
     }
-
   }
 
   Future<void> createUserInFirestore() async {
@@ -125,12 +118,25 @@ class AuthenticationRepository extends GetxController {
       firebaseUser.value!.reload();
 
       if (checkForInitialStateFunc == 0) {
-        // Rest of your existing logic...
+        checkForInitialStateFunc = 1;
+        if (firebaseUser.value != null) {
+          await createUserInFirestore();
+          sendVerificationEmail();
+          Get.offAll(() => EmailVerificationScreen());
+        } else {
+          Get.offAll(() => const MainPage());
+        }
       } else {
         setInitialScreen(firebaseUser.value);
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Error sign-up service: $e';
+      if (e.code == 'weak-password') {
+        errorMessage = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        errorMessage = 'The account already exists for that email.';
+      } else if (e.code == 'invalid-email')
+        errorMessage = 'The email address is not valid';
 
       Fluttertoast.showToast(
         msg: errorMessage,
@@ -147,9 +153,10 @@ class AuthenticationRepository extends GetxController {
         password: password,
       );
 
-      currentuser = await UserRepository().getUserDetails(_auth.currentUser!.uid);
+      currentuser =
+      await UserRepository().getUserDetails(_auth.currentUser!.uid);
       if (currentuser?.isAdmin == true) {
-        Get.offAll(() => AdminPanelMain());
+        Get.offAll(() => const AdminPanelMain());
       } else {
         Get.offAll(() => const MainPage());
       }
@@ -157,8 +164,7 @@ class AuthenticationRepository extends GetxController {
       String errorMessage = 'Error during login: $e';
 
       if (e.code == 'user-not-found') {
-        errorMessage =
-        'User not found. Please check your email or sign up.';
+        errorMessage = 'User not found. Please check your email or sign up.';
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Wrong password provided for that user';
       } else if (e.code == 'invalid-email') {
@@ -212,11 +218,11 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
-
   Future<bool> isUsernameUnique(String username) async {
     try {
       // Check if username exists in Firestore 'users' collection
-      var snapshot = await _usersCollection.where('username', isEqualTo: username).get();
+      var snapshot =
+      await _usersCollection.where('username', isEqualTo: username).get();
 
       // If no documents are found, the username is unique
       return true;
@@ -225,7 +231,4 @@ class AuthenticationRepository extends GetxController {
       throw e;
     }
   }
-
-
-
 }

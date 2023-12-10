@@ -5,6 +5,8 @@ import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_
 import '../SignUpPage/signup_screen.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
+  const EmailVerificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(EmailVerificationController());

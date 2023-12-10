@@ -122,21 +122,7 @@ class SignUpScreen extends StatelessWidget {
     }
 
     try {
-      // Validate unique email and username
-      final isEmailUnique = await AuthenticationRepository.instance.isEmailUnique(_emailController.text.trim());
-      final isUsernameUnique = await AuthenticationRepository.instance.isUsernameUnique(_userNameController.text.trim());
-
-      if (!isEmailUnique) {
-        showToast("Email is already in use.");
-        return;
-      }
-
-      if (!isUsernameUnique) {
-        showToast("Username is already taken.");
-        return;
-      }
-
-      // All checks passed, proceed with user registration
+           // All checks passed, proceed with user registration
       await AuthenticationRepository.instance.signUpWithEmailAndPassword(
         _emailController.text.trim(),
         _passwordController.text.trim(),

@@ -29,15 +29,15 @@ class EmailVerificationController extends GetxController {
   }
 
   Future<void> setTimeForAutoRedirect() async{
-    _timer  = Timer.periodic(const Duration(seconds: 10), (timer) async {
+    _timer  = Timer.periodic(const Duration(seconds: 3), (timer) async {
       FirebaseAuth.instance.currentUser?.reload();
       final user = FirebaseAuth.instance.currentUser;
       if(user!.emailVerified){
         timer.cancel();
-        await AuthenticationRepository.instance.createUserInFirestore();        Fluttertoast.showToast(
-          msg: "Email Verified! Logging In.",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,);
+        // await AuthenticationRepository.instance.createUserInFirestore();        Fluttertoast.showToast(
+        //   msg: "Email Verified! Logging In.",
+        //   toastLength: Toast.LENGTH_LONG,
+        //   gravity: ToastGravity.TOP,);
         AuthenticationRepository.instance.setInitialScreen(user);
       }
 
