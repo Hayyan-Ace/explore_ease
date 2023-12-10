@@ -1,117 +1,174 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
-import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
-import '../../Controllers/login_controller.dart';
+
+import '../../Services/AuthentactionRepository/authentication_repository.dart';
 import '../SignUpPage/signup_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late Color myColor;
+  late Size mediaSize;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool rememberUser = false;
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(LoginController());
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Login Page',
-          style: TextStyle(color: Colors.white),
+    myColor = Color(0xFFa2d19f);
+    mediaSize = MediaQuery.of(context).size;
+    return Container(
+      decoration: BoxDecoration(
+        color: myColor,
+        image: DecorationImage(
+          image: const AssetImage("images/login_bg_img.jpg"),
+          fit: BoxFit.cover,
+          colorFilter:
+          ColorFilter.mode(myColor.withOpacity(0.5), BlendMode.dstATop),
         ),
-        backgroundColor: Color(0xFF172614),
-        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFa2d19f), Color(0xFFa2d19f)],
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(children: [
+          Positioned(top: 20, child: _buildTop()),
+          Positioned(bottom: 0, child: _buildBottom()),
+        ]),
+      ),
+    );
+  }
+
+  Widget _buildTop() {
+    return SizedBox(
+      width: mediaSize.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            "images/logo.png", // Provide the correct path to your logo image
+            height: 300, // Adjust the height as needed
+            width: 300, // Adjust the width as needed
+            color: Colors.white,
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 16), // Added space
-            Text(
-              'ExploreEase',
-              style: TextStyle(
-                fontSize: 40, // Increased font size
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-                fontFamily: 'YourCursiveFont', // Replace with your cursive font
-              ),
-            ),
-            SizedBox(height: 50), // Added space
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                filled: true,
-                fillColor: Colors.white,
-                labelStyle: TextStyle(color: Color(0xFF172614)),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF172614)),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF172614), width: 2.0),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                filled: true,
-                fillColor: Colors.white,
-                labelStyle: TextStyle(color: Color(0xFF172614)),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF172614)),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF172614), width: 2.0),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => LoginController.instance.loginUser(_emailController.text.trim(), _passwordController.text.trim()),
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF172614),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              child: Text(
-                'Login',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignUpScreen()),
-                );
-              },
-              style: TextButton.styleFrom(
-                primary: Color(0xFF172614),
-              ),
-              child: Text('Don\'t have an account? Sign up here'),
-            ),
-          ],
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildBottom() {
+    return SizedBox(
+      width: mediaSize.width,
+      child: Card(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            )),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: _buildForm(),
         ),
       ),
     );
   }
+
+  Widget _buildForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Welcome",
+          style: TextStyle(
+              color: Colors.black87, fontSize: 32, fontWeight: FontWeight.w500),
+        ),
+        _buildGreyText("Please login with your information"),
+        const SizedBox(height: 60),
+        _buildGreyText("Email address"),
+        _buildInputField(_emailController),
+        const SizedBox(height: 40),
+        _buildGreyText("Password"),
+        _buildInputField(_passwordController, isPassword: true),
+        const SizedBox(height: 20),
+        _buildRememberForgot(),
+        const SizedBox(height: 20),
+        _buildLoginButton(),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildGreyText(String text) {
+    return Text(
+      text,
+      style: const TextStyle(color: Colors.grey),
+    );
+  }
+
+  Widget _buildInputField(TextEditingController controller,
+      {isPassword = false}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : Icon(Icons.done),
+      ),
+      obscureText: isPassword,
+    );
+  }
+
+  Widget _buildRememberForgot() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end, // Align to the end of the row
+      children: [
+        TextButton(
+          onPressed: () {
+            // Handle the "Don't have an account? Sign up here" action
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SignUpScreen()),
+            );
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.black87,
+          ),
+          child: Text("Don't have an account? Sign up here"),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        try {
+          await AuthenticationRepository.instance.loginWithEmailAndPassword(
+            _emailController.text.trim(),
+            _passwordController.text.trim(),
+          );
+        } catch (e) {
+          // Handle login errors here (e.g., display an error message)
+          print("Error during login: $e");
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        shape: const StadiumBorder(),
+        elevation: 20,
+        shadowColor: myColor,
+        backgroundColor: myColor.withOpacity(0.9),
+        minimumSize: const Size.fromHeight(60),
+      ),
+      child: Text(
+        'Login',
+        style: TextStyle(color: Colors.black87),
+      ),
+    );
+  }
+
+
+
+
+
 }

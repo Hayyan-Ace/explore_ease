@@ -73,6 +73,8 @@ flutter:
      - images/chat.json
      - images/imagesharing.json
      - images/tourTracking.json
+     - images/login_bg_img.jpg
+     - images/logo.png
 
   #   - images/a_dot_ham.jpeg
 
