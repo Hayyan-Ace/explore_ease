@@ -18,7 +18,8 @@ class _AdminToursPageState extends State<AdminToursPage> {
   late TextEditingController searchController;
 
   // Add a GlobalKey for the RefreshIndicator
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
 
   void _editTourDetails(Map<String, dynamic> tourDetails) {
     Navigator.push(
@@ -190,6 +191,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
             child: Center(
               child: isLoaded
                   ? RefreshIndicator(
+                color: const Color(0xFFa2d19f),
                 // Set the GlobalKey
                 key: _refreshIndicatorKey,
                 // Set the onRefresh callback
@@ -270,7 +272,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
                   },
                 ),
               )
-                  : Text("Loading..."),
+                  : const CircularProgressIndicator(color: Color(0xFFa2d19f),),
             ),
           ),
         ],

@@ -10,7 +10,7 @@ class AdminPaymentPage extends StatefulWidget {
 
 class _AdminPaymentPageState extends State<AdminPaymentPage> {
   var collection = FirebaseFirestore.instance.collection("users");
-  late List<Map<String, dynamic>> items;
+  late List<Map<String, dynamic>> items = [];
   bool isLoaded = false;
 
   @override
@@ -31,6 +31,11 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       items = tempList;
       isLoaded = true;
     });
+  }
+
+  Future<void> _handleRefresh() async {
+    // You can perform any background tasks or fetch new data here
+    await _fetchUserData();
   }
 
   Future<void> _showReceiptDialog(String receiptImageUrl, String userUid, int bookingIndex) async {
@@ -70,20 +75,51 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     }
   }
 
+  int countUnverifiedPayments() {
+    int count = 0;
+
+    for (var user in items) {
+      List<dynamic>? bookings = user["bookings"];
+      if (bookings != null && bookings.isNotEmpty) {
+        for (var booking in bookings) {
+          if (booking != null && booking is Map<String, dynamic> && !booking['verified']) {
+            count++;
+          }
+        }
+      }
+    }
+
+    return count;
+  }
+
   @override
   Widget build(BuildContext context) {
+    int unverifiedPaymentsCount = countUnverifiedPayments();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'PAYMENTS',
-          style: TextStyle(color: Colors.black, letterSpacing: 1.5, fontWeight: FontWeight.bold, fontSize: 24),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'PAYMENTS',
+              style: TextStyle(color: Colors.black, letterSpacing: 1.5, fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Text(
+              'Unverified Payments: $unverifiedPaymentsCount',
+              style: TextStyle(color: Colors.black, fontSize: 12),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: Center(
-        child: isLoaded
+        body: RefreshIndicator(
+          color: const Color(0xFFa2d19f),
+          onRefresh: _handleRefresh,
+          child: Center(
+          child: isLoaded
             ? ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, userIndex) {
+            itemCount: items.length,
+            itemBuilder: (context, userIndex) {
             List<dynamic>? bookings = items[userIndex]["bookings"];
             if (bookings != null && bookings.isNotEmpty) {
               return Column(
@@ -157,7 +193,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             }
           },
         )
-            : Text("No data"),
+            : CircularProgressIndicator(color: Color(0xFFa2d19f),),
+          ),
       ),
     );
   }
