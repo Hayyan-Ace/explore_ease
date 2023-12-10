@@ -7,7 +7,7 @@ import 'package:travel_ease_fyp/Screens/intro_screens/welcome.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
 
 
-
+// hello testo git after cloning
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp().then((value) => Get.put(AuthenticationRepository()));
