@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 class EditTourPage extends StatefulWidget {
   final Map<String, dynamic> tourDetails;
 
-  const EditTourPage({Key? key, required this.tourDetails}) : super(key: key);
+  const EditTourPage({super.key, required this.tourDetails});
 
   @override
   _EditTourPageState createState() => _EditTourPageState();
@@ -82,7 +82,7 @@ class _EditTourPageState extends State<EditTourPage> {
         enabled: false, // Set to false to make it uneditable
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
@@ -92,7 +92,7 @@ class _EditTourPageState extends State<EditTourPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Tour'),
+        title: const Text('Edit Tour'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -107,7 +107,7 @@ class _EditTourPageState extends State<EditTourPage> {
               _buildEditableField("End Point", endPointController),
               _buildEditableField("Price", priceController),
               _buildEditableField("Duration", durationController),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: getImage,
                 child: _image == null
@@ -117,7 +117,7 @@ class _EditTourPageState extends State<EditTourPage> {
                   color: Colors.grey[200],
                   child: widget.tourDetails["imageUrl"] != null
                       ? Image.network(widget.tourDetails["imageUrl"])
-                      : Center(child: Text("No Image")),
+                      : const Center(child: Text("No Image")),
                 )
                     : Image.file(
                   _image!,
@@ -126,8 +126,16 @@ class _EditTourPageState extends State<EditTourPage> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
+
+                style: ElevatedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  elevation: 20,
+                  shadowColor: const Color(0xFFa2d19f),
+                  backgroundColor: const Color(0xFFa2d19f).withOpacity(0.9),
+                ),
+
                 onPressed: () async {
                   // Your existing code for updating tour details
 
@@ -151,7 +159,9 @@ class _EditTourPageState extends State<EditTourPage> {
                   // Navigate back or perform any other action after saving
                   Navigator.pop(context);
                 },
-                child: Text('Save'),
+                child: const Text(
+                    'Save',
+                    style: TextStyle(color: Colors.black87)),
               ),
             ],
           ),

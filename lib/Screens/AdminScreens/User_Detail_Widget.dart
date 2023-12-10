@@ -34,8 +34,16 @@ class UserDetailWidget extends StatelessWidget {
           // Add more fields as needed
           const SizedBox(height: 16),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: const StadiumBorder(),
+              elevation: 20,
+              shadowColor: const Color(0xFFa2d19f),
+              backgroundColor: const Color(0xFFa2d19f).withOpacity(0.9),
+            ),
             onPressed: onDeletePressed,
-            child: Text('Delete User'),
+            child: const Text(
+                'Delete User',
+                style: TextStyle(color: Colors.black87)),
           ),
         ],
       ),
