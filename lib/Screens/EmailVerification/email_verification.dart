@@ -4,7 +4,6 @@ import 'package:travel_ease_fyp/Controllers/email_verification_controller.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
 import '../SignUpPage/signup_screen.dart';
 
-
 class EmailVerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,7 +11,7 @@ class EmailVerificationScreen extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        // Navigate to SignupScreen when user swipes to go back
+        // Navigate to SignupScreen when the user swipes to go back
         Get.off(() => SignUpScreen());
         return false;
       },
@@ -45,7 +44,9 @@ class EmailVerificationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () => AuthenticationRepository.instance.sendVerificationEmail(),
+                onPressed: () async {
+                  await AuthenticationRepository.instance.sendVerificationEmail();
+                },
                 child: const Text('Resend Verification Email'),
               ),
             ],
