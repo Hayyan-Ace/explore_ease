@@ -20,13 +20,13 @@ class _AdminHomePageState extends State<AdminHomePage>{
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.only(top: 70, left: 20),
+            padding: const EdgeInsets.only(top: 70, left: 20),
             child: Row(
               children: [
-                Icon(Icons.menu, size: 30, color: Colors.black54,),
+                const Icon(Icons.menu, size: 30, color: Colors.black54,),
                 Expanded(child: Container()),
                 Container(
-                  margin: EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(right: 20),
                   width: 50,
                   height: 50,
 
@@ -39,12 +39,12 @@ class _AdminHomePageState extends State<AdminHomePage>{
               ],
             ),
           ),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           Container(
             margin: const EdgeInsets.only(left: 20),
             child: LargeBoldText(text: 'Discover'),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Expanded(
 
             child: SlideshowScreen(),

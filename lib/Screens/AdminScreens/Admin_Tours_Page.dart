@@ -126,7 +126,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'TOURS',
               style: TextStyle(
                 color: Colors.black,
@@ -137,7 +137,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
             ),
             Text(
               'Total Tours: ${items.length}',
-              style: TextStyle(color: Colors.black, fontSize: 12),
+              style: const TextStyle(color: Colors.black, fontSize: 12),
             ),
           ],
         ),
@@ -278,8 +278,8 @@ class _AdminToursPageState extends State<AdminToursPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _createTour,
         tooltip: 'Create Tour',
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightGreenAccent,
+        backgroundColor: const Color(0xFFa2d19f),
+        child: const Icon(Icons.add),
       ),
     );
   }

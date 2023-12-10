@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'User_Detail_Widget.dart';
 
 class AdminUsersPage extends StatefulWidget {
-  const AdminUsersPage({Key? key}) : super(key: key);
+  const AdminUsersPage({super.key});
 
   @override
   _AdminUsersPageState createState() => _AdminUsersPageState();
@@ -14,6 +14,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   var collection = FirebaseFirestore.instance.collection("users");
   late List<Map<String, dynamic>> items = [];
   bool isLoaded = false;
+
+  late Color myColor;
+
 
   @override
   void initState() {
@@ -25,9 +28,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     List<Map<String, dynamic>> tempList = [];
     var data = await collection.get();
 
-    data.docs.forEach((element) {
+    for (var element in data.docs) {
       tempList.add(element.data());
-    });
+    }
 
     setState(() {
       items = tempList;
@@ -35,26 +38,6 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     });
   }
 
-  _showDeleteOptions(String userId) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Delete User'),
-              onTap: () {
-                _deleteUser(userId);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   _deleteUser(String userId) async {
     await collection.doc(userId).delete();
@@ -79,6 +62,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
 
   @override
   Widget build(BuildContext context) {
+    myColor = const Color(0xFFa2d19f);
     int totalUsers = items.length;
 
     return Scaffold(
@@ -131,10 +115,10 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                     padding: const EdgeInsets.all(5),
                     margin: const EdgeInsets.only(right: 10),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
+                      color: myColor,
                       shape: BoxShape.circle,
                     ),
-                    child: const Center(child: Icon(Icons.search, color: Colors.white, size: 22)),
+                    child: const Center(child: Icon(Icons.search, color: Colors.black87, size: 22)),
                   )
                 ],
               ),
@@ -152,7 +136,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: CircleAvatar(
-                        backgroundColor: Colors.lightGreenAccent,
+                        backgroundColor: myColor,
                         child: Icon(Icons.person),
                       ),
                     ),
@@ -167,7 +151,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                         if (item["isAdmin"] == true)
                           Icon(
                             Icons.check_circle,
-                            color: Colors.green,
+                            color: myColor,
                             size: 22,
                           ),
                         const SizedBox(width: 8),

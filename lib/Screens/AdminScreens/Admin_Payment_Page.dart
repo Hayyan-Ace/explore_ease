@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AdminPaymentPage extends StatefulWidget {
@@ -59,28 +58,27 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     );
   }
 
-
   Future<void> updateVerificationStatus(String uid, int bookingIndex) async {
-    // Assuming you have a reference to your Firestore collection
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
 
-    // Get the current bookings
     var currentBookings = (await userReference.get()).data()?['bookings'] as List<dynamic>?;
 
     if (currentBookings != null) {
-      // Update the 'verified' field within the specified booking
       currentBookings[bookingIndex]['verified'] = true;
 
-      // Update the 'bookings' field in the Firestore document
       await userReference.update({'bookings': currentBookings});
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'PAYMENTS',
+          style: TextStyle(color: Colors.black, letterSpacing: 1.5, fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+      ),
       body: Center(
         child: isLoaded
             ? ListView.builder(
@@ -91,57 +89,62 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListTile(
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(width: 2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    leading: const CircleAvatar(
-                      backgroundColor: Color(0xff6ae792),
-                      child: Icon(Icons.person),
-                    ),
-                    title: Text(
-                      "Uid: ${items[userIndex]["uid"]}\nUsername: ${items[userIndex]["username"]}",
-                    ),
-                    trailing: Icon(Icons.more_vert),
-                  ),
-                  for (var bookingIndex = 0;
-                  bookingIndex < bookings.length;
-                  bookingIndex++)
+                  for (var bookingIndex = 0; bookingIndex < bookings.length; bookingIndex++)
                     if (bookings[bookingIndex] != null)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: // Inside your ListView.builder
-                        GestureDetector(
-                          onTap: () {
-                            dynamic booking = bookings[bookingIndex];
-                            if (booking != null && booking is Map<String, dynamic>) {
-                              // Check if 'tourUid' is present in the booking
-                              if (booking.containsKey('tourUid')) {
-                                String tourUid = booking['tourUid'];
-                                // Use 'tourUid' as needed
-                                print("Tour UID: $tourUid");
+                      GestureDetector(
+                        onTap: () {
+                          dynamic booking = bookings[bookingIndex];
+                          if (booking != null && booking is Map<String, dynamic>) {
+                            if (booking.containsKey('tourUid')) {
+                              String tourUid = booking['tourUid'];
+                              print("Tour UID: $tourUid");
 
-                                // Fetch 'receiptImageUrl' and 'userUid' from the booking
-                                String receiptImageUrl = booking['receiptImageUrl'].toString();
-                                String userUid = items[userIndex]["uid"] ?? '';
+                              String receiptImageUrl = booking['receiptImageUrl'].toString();
+                              String userUid = items[userIndex]["uid"] ?? '';
 
-                                print("Receipt Image URL: $receiptImageUrl");
+                              print("Receipt Image URL: $receiptImageUrl");
 
-                                _showReceiptDialog(receiptImageUrl, userUid, bookingIndex);
-                              } else {
-                                // Handle the case where 'tourUid' is not present
-                                print("Error: 'tourUid' is not present in the booking data");
-                              }
+                              _showReceiptDialog(receiptImageUrl, userUid, bookingIndex);
                             } else {
-                              // Handle the case where 'booking' is null or not a Map
-                              print("Error: Booking data is null or not a Map");
+                              print("Error: 'tourUid' is not present in the booking data");
                             }
-                          },
+                          } else {
+                            print("Error: Booking data is null or not a Map");
+                          }
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: ListTile(
-                            title: Text(
-                              'Tour Name: ${bookings[bookingIndex]['tourName']},\nTour ID: ${bookings[bookingIndex]['tourUid']},\nVerified: ${bookings[bookingIndex]['verified']}\n - - - ',
-                              style: TextStyle(fontSize: 12),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  items[userIndex]["username"] ?? "Username not available",
+                                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  'Tour Name: ${bookings[bookingIndex]['tourName']}',
+                                  style: Theme.of(context).textTheme.bodyText1,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Verified: ',
+                                      style: Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                    Icon(
+                                      bookings[bookingIndex]['verified'] == true
+                                          ? Icons.check_circle
+                                          : Icons.cancel,
+                                      color: bookings[bookingIndex]['verified'] == true
+                                          ? Colors.green
+                                          : Colors.red,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                             trailing: Icon(Icons.more_vert),
                           ),
@@ -150,7 +153,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                 ],
               );
             } else {
-              return Container(); // Return an empty container if bookings is null or empty
+              return Container();
             }
           },
         )
