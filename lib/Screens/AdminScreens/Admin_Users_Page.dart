@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -41,10 +42,23 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   }
 
   _deleteUser(String userId) async {
-    await collection.doc(userId).delete();
-    // You may also want to perform additional cleanup or actions after deletion
-    await _fetchUserData(); // Refresh the list after deletion
+    try {
+      // Delete the user from Firebase Authentication
+      await FirebaseAuth.instance.currentUser?.delete();
+
+      // Delete the user data from Firestore
+      await collection.doc(userId).delete();
+
+      // You may also want to perform additional cleanup or actions after deletion
+
+      // Refresh the list after deletion
+      await _fetchUserData();
+    } catch (e) {
+      print('Error deleting user: $e');
+      // Handle error, if any
+    }
   }
+
 
   _showUserDetails(String userId, Map<String, dynamic> userData) {
     showModalBottomSheet(
