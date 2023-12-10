@@ -176,7 +176,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
                   padding: const EdgeInsets.all(5),
                   margin: const EdgeInsets.only(right: 10),
                   decoration: BoxDecoration(
-                    color: Colors.lightGreenAccent,
+                    color: Color(0xFFa2d19f),
                     shape: BoxShape.circle,
                   ),
                   child: const Center(
@@ -214,7 +214,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
                       child: Card(
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.lightGreenAccent,
+                            backgroundColor: Color(0xFFa2d19f),
                             child: Icon(Icons.location_pin),
                           ),
                           title: Row(

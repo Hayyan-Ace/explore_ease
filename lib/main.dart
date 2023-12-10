@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: MainPage(),
+      home: WelcomeScreen(),
       theme: ThemeData(
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {

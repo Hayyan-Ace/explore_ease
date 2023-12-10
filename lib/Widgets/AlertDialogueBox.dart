@@ -19,5 +19,4 @@ class AlertBox extends StatelessWidget{
       ],
     );
   }
-
 }

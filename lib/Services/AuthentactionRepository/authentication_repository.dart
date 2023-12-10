@@ -46,14 +46,19 @@ class AuthenticationRepository extends GetxController {
   setInitialScreen(User? user) async {
     if (user != null) {
       currentuser = await UserRepository().getUserDetails(user.uid);
+      currentuser?.isAdmin ?? false == true
+          ? Get.offAll(() => AdminPanelMain())
+          : user == null
+          ? Get.offAll(() => const WelcomeScreen())
+          : user.emailVerified
+          ? Get.offAll(() => const MainPage())
+          : Get.offAll(() => EmailVerificationScreen());
     }
-    currentuser?.isAdmin ?? false == true
-        ? Get.offAll(() => AdminPanelMain())
-        : user == null
-        ? Get.offAll(() => const WelcomeScreen())
-        : user.emailVerified
-        ? Get.offAll(() => const MainPage())
-        : Get.offAll(() => EmailVerificationScreen());
+    else
+    {
+      Get.offAll(() => const WelcomeScreen());
+    }
+
   }
 
   Future<void> createUserInFirestore() async {
