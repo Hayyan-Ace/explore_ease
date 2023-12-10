@@ -83,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Welcome',
+          'Welcome.',
 
           style: TextStyle(color: Colors.black87, fontSize: 32, fontWeight: FontWeight.w500),
         ),
