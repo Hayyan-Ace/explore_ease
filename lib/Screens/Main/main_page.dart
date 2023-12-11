@@ -30,16 +30,19 @@ class _MainPageState extends State<MainPage>{
   Widget build(BuildContext context){
     return Scaffold(
       body: pages[currentIndexNavBar],
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        currentIndex: currentIndexNavBar,
-        onTap: onTapNavBar,
-        unselectedFontSize: 0,
+      bottomNavigationBar: BottomNavigationBar(showUnselectedLabels: false,
+          currentIndex: currentIndexNavBar,
+          onTap: onTapNavBar,
+          unselectedFontSize: 0,
+          selectedIconTheme: const IconThemeData(color: Color(0xFFa2d19f)), // Set the default color for selected icons
+          unselectedIconTheme: const IconThemeData(color: Colors.black), // Set the default color for unselected icons
+          selectedItemColor: Color(0xFFa2d19f), // Set the font color for the selected item
 
-        items: [
+
+          items: const [
           BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
           BottomNavigationBarItem(label: 'Chat',icon: Icon(Icons.chat)),
-          BottomNavigationBarItem(label: 'Profile',icon: Icon(Icons.person)),
+          BottomNavigationBarItem(label: 'Settings',icon: Icon(Icons.settings)),
         ]
       ),
     );
