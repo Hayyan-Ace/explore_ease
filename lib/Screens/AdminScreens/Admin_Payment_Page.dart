@@ -98,16 +98,17 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFFa2d19f),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'PAYMENTS',
               style: TextStyle(color: Colors.black, letterSpacing: 1.5, fontWeight: FontWeight.bold, fontSize: 24),
             ),
             Text(
               'Unverified Payments: $unverifiedPaymentsCount',
-              style: TextStyle(color: Colors.black, fontSize: 12),
+              style: const TextStyle(color: Colors.black, fontSize: 12),
               ),
             ],
           ),
@@ -149,6 +150,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                           }
                         },
                         child: Card(
+                          elevation: 3,
                           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: ListTile(
                             title: Column(
@@ -182,7 +184,6 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                                 ),
                               ],
                             ),
-                            trailing: Icon(Icons.more_vert),
                           ),
                         ),
                       ),
@@ -193,7 +194,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             }
           },
         )
-            : CircularProgressIndicator(color: Color(0xFFa2d19f),),
+            : const CircularProgressIndicator(color: Color(0xFFa2d19f),),
           ),
       ),
     );

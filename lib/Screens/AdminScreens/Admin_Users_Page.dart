@@ -161,7 +161,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                 children: isLoaded
                     ? displayedItems.map((item) {
                   return Card(
+                    color: Colors.white,
                     margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    elevation: 3,
                     child: ListTile(
                       onTap: () {
                         _showUserDetails(item["uid"], item);
@@ -177,6 +179,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                       title: Row(
                         children: [
                           Text(
+
                             item["username"] + " " ?? "not given",
                             style: Theme.of(context).textTheme.headline6?.copyWith(
                               fontWeight: FontWeight.bold,

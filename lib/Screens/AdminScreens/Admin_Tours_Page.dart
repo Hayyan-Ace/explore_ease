@@ -19,7 +19,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
 
   // Add a GlobalKey for the RefreshIndicator
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
 
   void _editTourDetails(Map<String, dynamic> tourDetails) {
     Navigator.push(
@@ -65,7 +65,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
     // For now, let's filter tours based on the tourName
     List<Map<String, dynamic>> filteredList = items
         .where((tour) =>
-        tour["tourName"].toLowerCase().contains(query.toLowerCase()))
+            tour["tourName"].toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     setState(() {
@@ -84,8 +84,8 @@ class _AdminToursPageState extends State<AdminToursPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Tour'),
-          content: SingleChildScrollView(
+          title: const Text('Delete Tour'),
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text('Are you sure you want to delete this tour?'),
@@ -124,6 +124,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: const Color(0xFFa2d19f),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -169,14 +170,15 @@ class _AdminToursPageState extends State<AdminToursPage> {
                       hintText: 'Search Tours',
                       hintStyle: TextStyle(color: Colors.grey.shade400),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 20),
                     ),
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(5),
                   margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFa2d19f),
                     shape: BoxShape.circle,
                   ),
@@ -191,88 +193,88 @@ class _AdminToursPageState extends State<AdminToursPage> {
             child: Center(
               child: isLoaded
                   ? RefreshIndicator(
-                color: const Color(0xFFa2d19f),
-                // Set the GlobalKey
-                key: _refreshIndicatorKey,
-                // Set the onRefresh callback
-                onRefresh: _handleRefresh,
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return Dismissible(
-                      key: Key(items[index]["tourId"]),
-                      onDismissed: (direction) {
-                        _deleteTour(items[index]["tourId"]);
-                      },
-                      background: Container(
-                        color: Colors.red,
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 20),
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                      ),
-                      child: Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Color(0xFFa2d19f),
-                            child: Icon(Icons.location_pin),
-                          ),
-                          title: Row(
-                            children: [
-                              SizedBox(width: 10),
-                              Text(
-                                items[index]["tourName"] ?? "Not Given",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          subtitle: Text(
-                            items[index]["description"] ?? "",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                ?.copyWith(height: 1.5),
-                          ),
-                          trailing: PopupMenuButton<String>(
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                _editTourDetails(items[index]);
-                              } else if (value == 'delete') {
-                                _showDeleteDialog(items[index]["tourId"]);
-                              }
+                      color: const Color(0xFFa2d19f),
+                      // Set the GlobalKey
+                      key: _refreshIndicatorKey,
+                      // Set the onRefresh callback
+                      onRefresh: _handleRefresh,
+                      child: ListView.builder(
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          return Dismissible(
+                            key: Key(items[index]["tourId"]),
+                            onDismissed: (direction) {
+                              _deleteTour(items[index]["tourId"]);
                             },
-                            itemBuilder: (BuildContext context) =>
-                            <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
-                                value: 'edit',
-                                child: ListTile(
-                                  leading: Icon(Icons.edit),
-                                  title: Text('Edit Tour'),
-                                ),
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
                               ),
-                              const PopupMenuItem<String>(
-                                value: 'delete',
-                                child: ListTile(
-                                  leading: Icon(Icons.delete),
-                                  title: Text('Delete Tour'),
+                            ),
+                            child: Card(
+                              elevation: 3,
+                              color: Colors.white,
+                              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                              child: ListTile(
+                                leading: const CircleAvatar(
+                                  backgroundColor: Color(0xFFa2d19f), // Set to your desired background color
+                                  child: Icon(Icons.location_pin),
                                 ),
+                                title: Row(
+                                  children: [
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      items[index]["tourName"] ?? "Not Given",
+                                      style: Theme.of(context).textTheme.headline6?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Text(
+                                  items[index]["description"] ?? "",
+                                  style: Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                                ),
+                                trailing: PopupMenuButton<String>(
+                                  color: Colors.white,
+                                  onSelected: (value) {
+                                    if (value == 'edit') {
+                                      _editTourDetails(items[index]);
+                                    } else if (value == 'delete') {
+                                      _showDeleteDialog(items[index]["tourId"]);
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                    const PopupMenuItem<String>(
+                                      value: 'edit',
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('Edit Tour'),
+                                      ),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'delete',
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('Delete Tour'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                contentPadding: const EdgeInsets.all(16), // Adjust padding as needed
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              )
-                  : const CircularProgressIndicator(color: Color(0xFFa2d19f),),
+                    )
+                  : const CircularProgressIndicator(
+                      color: Color(0xFFa2d19f),
+                    ),
             ),
           ),
         ],

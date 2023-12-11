@@ -128,8 +128,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Widget _buildInfoCard(String title, int count, IconData iconData, Color startColor, Color endColor) {
     return Container(
       padding: const EdgeInsets.all(20),
-      width: 300,
-      height: 150,
+      width: 350,
+      height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         gradient: LinearGradient(
@@ -147,34 +147,41 @@ class _AdminHomePageState extends State<AdminHomePage> {
         ],
       ),
       margin: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Column(
         children: [
-          Icon(
-            iconData,
-            size: 45,
-            color: Colors.white,
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-          const SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 20,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              const SizedBox(width: 5,),
+              Icon(
+                iconData,
+                size: 50,
+                color: Colors.white,
               ),
-              const SizedBox(height: 10),
-              Text(
-                count.toString(),
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              const SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  const SizedBox(height: 10),
+                  Text(
+                    count.toString(),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

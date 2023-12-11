@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
-import 'package:travel_ease_fyp/Screens/SignUpPage/signup_screen.dart';
 import 'package:travel_ease_fyp/Screens/intro_screens/welcome.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
 

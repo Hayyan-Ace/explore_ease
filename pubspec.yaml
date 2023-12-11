@@ -44,6 +44,8 @@ dependencies:
   smooth_page_indicator: ^1.0.0
   google_nav_bar: ^5.0.6
   lottie: ^2.7.0
+  flex_color_scheme: ^2.1.1
+
 
 
 dev_dependencies:
