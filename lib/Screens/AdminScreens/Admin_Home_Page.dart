@@ -115,8 +115,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildInfoCard('Total Users', totalUsersCount, Icons.person, Colors.blueAccent, Colors.blue),
-                _buildInfoCard('Unverified Payments', totalUnverifiedPaymentsCount, Icons.warning, Colors.deepOrange, Colors.orange),
-                _buildInfoCard('Active Tours', totalActiveToursCount, Icons.directions_car, Colors.green, Colors.lightGreen),
+                _buildInfoCard('Unverified Payments', totalUnverifiedPaymentsCount, Icons.payment_rounded, Colors.deepOrange, Colors.orange),
+                _buildInfoCard('Active Tours', totalActiveToursCount, Icons.tour_outlined, Colors.green, Colors.lightGreen),
               ],
             ),
           ),
