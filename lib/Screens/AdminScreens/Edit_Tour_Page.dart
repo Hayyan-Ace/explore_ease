@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class EditTourPage extends StatefulWidget {
   final Map<String, dynamic> tourDetails;
@@ -22,19 +23,28 @@ class _EditTourPageState extends State<EditTourPage> {
   late TextEditingController durationController;
   late TextEditingController tourIdController;
 
+  DateTime? _selectedDate;
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    tourIdController = TextEditingController(text: widget.tourDetails["tourId"]);
-    nameController = TextEditingController(text: widget.tourDetails["tourName"]);
-    descriptionController = TextEditingController(text: widget.tourDetails["description"]);
-    startingPointController = TextEditingController(text: widget.tourDetails["startingPoint"]);
-    endPointController = TextEditingController(text: widget.tourDetails["endPoint"]);
-    priceController = TextEditingController(text: widget.tourDetails["price"].toString());
-    durationController = TextEditingController(text: widget.tourDetails["duration"].toString());
+    tourIdController =
+        TextEditingController(text: widget.tourDetails["tourId"]);
+    nameController =
+        TextEditingController(text: widget.tourDetails["tourName"]);
+    descriptionController =
+        TextEditingController(text: widget.tourDetails["description"]);
+    startingPointController =
+        TextEditingController(text: widget.tourDetails["startingPoint"]);
+    endPointController =
+        TextEditingController(text: widget.tourDetails["endPoint"]);
+    priceController =
+        TextEditingController(text: widget.tourDetails["price"].toString());
+    durationController =
+        TextEditingController(text: widget.tourDetails["duration"].toString());
   }
 
   @override
@@ -63,9 +73,14 @@ class _EditTourPageState extends State<EditTourPage> {
 
   Future<String?> uploadImageToFirebaseStorage(File image) async {
     try {
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      String fileName = DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString();
       var storageReference =
-      firebase_storage.FirebaseStorage.instance.ref().child('tour_images').child('$fileName.jpg');
+      firebase_storage.FirebaseStorage.instance.ref()
+          .child('tour_images')
+          .child('$fileName.jpg');
       await storageReference.putFile(image);
       return await storageReference.getDownloadURL();
     } catch (e) {
@@ -107,7 +122,9 @@ class _EditTourPageState extends State<EditTourPage> {
               _buildEditableField("End Point", endPointController),
               _buildEditableField("Price", priceController),
               _buildEditableField("Duration", durationController),
-              const SizedBox(height: 16),
+              SizedBox(height: 5,),
+              _buildEditableDateField("Tour Date"),
+              const SizedBox(height: 0),
               GestureDetector(
                 onTap: getImage,
                 child: _image == null
@@ -126,14 +143,12 @@ class _EditTourPageState extends State<EditTourPage> {
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 1),
               ElevatedButton(
 
                 style: ElevatedButton.styleFrom(
                   shape: const StadiumBorder(),
-                  elevation: 20,
-                  shadowColor: const Color(0xFFa2d19f),
-                  backgroundColor: const Color(0xFFa2d19f).withOpacity(0.9),
+                  backgroundColor: const Color(0xFFa2d19f).withOpacity(1),
                 ),
 
                 onPressed: () async {
@@ -141,7 +156,8 @@ class _EditTourPageState extends State<EditTourPage> {
 
                   // Update the image URL if a new image is selected
                   if (_image != null) {
-                    String? imageUrl = await uploadImageToFirebaseStorage(_image!);
+                    String? imageUrl = await uploadImageToFirebaseStorage(
+                        _image!);
                     if (imageUrl != null) {
                       // Update the image URL in the tour details
                       widget.tourDetails["imageUrl"] = imageUrl;
@@ -150,7 +166,9 @@ class _EditTourPageState extends State<EditTourPage> {
 
                   // Save the updated data to Firebase Firestore
                   try {
-                    await FirebaseFirestore.instance.collection('Tour').doc(widget.tourDetails["tourId"]).update(widget.tourDetails);
+                    await FirebaseFirestore.instance.collection('Tour').doc(
+                        widget.tourDetails["tourId"]).update(
+                        widget.tourDetails);
                   } catch (e) {
                     print('Error updating document: $e');
                     // Handle the error appropriately
@@ -182,4 +200,60 @@ class _EditTourPageState extends State<EditTourPage> {
       ),
     );
   }
+
+  Widget _buildEditableDateField(String label) {
+    return GestureDetector(
+      onTap: () => _selectDate(context), // Show date picker
+      child: _selectedDate == null
+          ? Container(
+        width: 200,
+        height: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFFa2d19f),
+          borderRadius: BorderRadius.circular(100.0), // Set border radius
+        ),
+        alignment: Alignment.center,
+        child: const Text('Select Date'),
+      )
+          : Container(
+        width: 200,
+        height: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFFa2d19f),
+          borderRadius: BorderRadius.circular(100.0), // Set border radius
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          '${_selectedDate!.toLocal()}'.split(' ')[0], // Display selected date
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: const Color(0xFFa2d19f), // header background color
+            hintColor: const Color(0xFFa2d19f), // color of selected day
+            colorScheme: const ColorScheme.light(primary: Color(0xFFa2d19f)),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
 }

@@ -14,6 +14,8 @@ class CreateTourPage extends StatefulWidget {
 
 class _CreateTourPageState extends State<CreateTourPage> {
   final _formKey = GlobalKey<FormState>();
+  DateTime? _selectedDate;
+
 
   // Controllers for each form field
   final TextEditingController _nameController = TextEditingController();
@@ -56,7 +58,8 @@ class _CreateTourPageState extends State<CreateTourPage> {
       'endPoint': endPoint,
       'price': price,
       'duration': duration,
-      'imageUrl': '', // Placeholder for the image URL, update with the actual URL
+      'imageUrl': '',
+      'tourDate': _selectedDate,
     });
 
     // Retrieve the auto-generated tour ID
@@ -108,11 +111,10 @@ class _CreateTourPageState extends State<CreateTourPage> {
     return imageUrl;
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Tour'),
+        title: const Text('Create Tour'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -128,7 +130,7 @@ class _CreateTourPageState extends State<CreateTourPage> {
               _buildTextField(_endPointController, 'End Point'),
               _buildTextField(_priceController, 'Price'),
               _buildTextField(_durationController, 'Duration'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: getImage,
                 child: _image == null
@@ -136,19 +138,50 @@ class _CreateTourPageState extends State<CreateTourPage> {
                   width: 150,
                   height: 150,
                   color: Colors.grey[200],
-                  child: Icon(Icons.add_a_photo, size: 50),
+                  child: const Icon(Icons.add_a_photo, size: 50),
                 )
                     : Image.file(_image!, width: 150, height: 150, fit: BoxFit.cover),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () => _selectDate(context), // Show date picker
+                child: _selectedDate == null
+                    ? Container(
+                  width: 20,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFa2d19f),
+                    borderRadius: BorderRadius.circular(100.0), // Set border radius
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text('Select Date'),
+                )
+                    : Container(
+                  width: 20,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFa2d19f),
+                    borderRadius: BorderRadius.circular(100.0), // Set border radius
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${_selectedDate!.toLocal()}'.split(' ')[0], // Display selected date
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  backgroundColor: const Color(0xFFa2d19f).withOpacity(1),
+                ),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     // Perform the tour creation logic here
                     _createTour();
                   }
                 },
-                child: Text('Create Tour'),
+                child: const Text('Create Tour',style: TextStyle(color: Colors.black87),),
               ),
             ],
           ),
@@ -157,7 +190,8 @@ class _CreateTourPageState extends State<CreateTourPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label) {
+
+Widget _buildTextField(TextEditingController controller, String label) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -172,4 +206,32 @@ class _CreateTourPageState extends State<CreateTourPage> {
       ),
     );
   }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: const Color(0xFFa2d19f), // header background color
+            hintColor: const Color(0xFFa2d19f), // color of selected day
+            colorScheme: const ColorScheme.light(primary: Color(0xFFa2d19f)),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
+
 }
