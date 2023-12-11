@@ -124,7 +124,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFa2d19f),
+        backgroundColor: Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -226,7 +226,6 @@ class _AdminToursPageState extends State<AdminToursPage> {
                                 ),
                                 title: Row(
                                   children: [
-                                    const SizedBox(width: 10),
                                     Text(
                                       items[index]["tourName"] ?? "Not Given",
                                       style: Theme.of(context).textTheme.headline6?.copyWith(
@@ -237,7 +236,9 @@ class _AdminToursPageState extends State<AdminToursPage> {
                                 ),
                                 subtitle: Text(
                                   items[index]["description"] ?? "",
-                                  style: Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                                  style:
+                                  Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                                  maxLines: 5,
                                 ),
                                 trailing: PopupMenuButton<String>(
                                   color: Colors.white,

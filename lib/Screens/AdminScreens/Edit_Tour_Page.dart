@@ -117,12 +117,12 @@ class _EditTourPageState extends State<EditTourPage> {
             children: [
               _buildEditableField("Name", nameController),
               _buildUneditableField("Tour ID", tourIdController.text),
-              _buildEditableField("Description", descriptionController),
               _buildEditableField("Starting Point", startingPointController),
               _buildEditableField("End Point", endPointController),
               _buildEditableField("Price", priceController),
               _buildEditableField("Duration", durationController),
-              SizedBox(height: 5,),
+              _buildEditableDescriptionField("Description", descriptionController),
+              const SizedBox(height: 5,),
               _buildEditableDateField("Tour Date"),
               const SizedBox(height: 0),
               GestureDetector(
@@ -131,7 +131,7 @@ class _EditTourPageState extends State<EditTourPage> {
                     ? Container(
                   width: 150,
                   height: 150,
-                  color: Colors.grey[200],
+                  color: Colors.white,
                   child: widget.tourDetails["imageUrl"] != null
                       ? Image.network(widget.tourDetails["imageUrl"])
                       : const Center(child: Text("No Image")),
@@ -175,6 +175,7 @@ class _EditTourPageState extends State<EditTourPage> {
                   }
 
                   // Navigate back or perform any other action after saving
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context);
                 },
                 child: const Text(
@@ -195,11 +196,27 @@ class _EditTourPageState extends State<EditTourPage> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
   }
+
+  Widget _buildEditableDescriptionField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        maxLines: 10,
+        textInputAction: TextInputAction.newline, // Enable new-line action
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildEditableDateField(String label) {
     return GestureDetector(

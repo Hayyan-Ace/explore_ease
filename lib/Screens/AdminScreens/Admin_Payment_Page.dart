@@ -12,6 +12,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   var collection = FirebaseFirestore.instance.collection("users");
   late List<Map<String, dynamic>> items = [];
   bool isLoaded = false;
+  bool showVerifiedPayments = true;
 
   @override
   void initState() {
@@ -34,7 +35,6 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   }
 
   Future<void> _handleRefresh() async {
-    // You can perform any background tasks or fetch new data here
     await _fetchUserData();
   }
 
@@ -43,18 +43,32 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Receipt Image'),
+          title: const Text('Receipt Image'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(receiptImageUrl),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFa2d19f),
+                ),
                 onPressed: () async {
-                  await updateVerificationStatus(userUid, bookingIndex);
+                  await approvePayment(userUid, bookingIndex);
                   Navigator.of(context).pop();
                 },
-                child: Text('Verify Payment'),
+                child: const Text('Verify Payment', style: TextStyle(color: Colors.black)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await disapprovePayment(userUid, bookingIndex);
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text('Disapprove Payment', style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -63,13 +77,25 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     );
   }
 
-  Future<void> updateVerificationStatus(String uid, int bookingIndex) async {
+  Future<void> approvePayment(String uid, int bookingIndex) async {
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
 
     var currentBookings = (await userReference.get()).data()?['bookings'] as List<dynamic>?;
 
     if (currentBookings != null) {
       currentBookings[bookingIndex]['verified'] = true;
+
+      await userReference.update({'bookings': currentBookings});
+    }
+  }
+
+  Future<void> disapprovePayment(String uid, int bookingIndex) async {
+    var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
+
+    var currentBookings = (await userReference.get()).data()?['bookings'] as List<dynamic>?;
+
+    if (currentBookings != null) {
+      currentBookings.removeAt(bookingIndex);
 
       await userReference.update({'bookings': currentBookings});
     }
@@ -92,13 +118,26 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     return count;
   }
 
+  List<Map<String, dynamic>> getFilteredPayments() {
+    if (showVerifiedPayments) {
+      return items;
+    } else {
+      return items
+          .where((user) => (user['bookings'] as List<dynamic>?)
+          ?.any((booking) => booking is Map<String, dynamic> && !booking['verified']) ??
+          false)
+          .toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int unverifiedPaymentsCount = countUnverifiedPayments();
+    List<Map<String, dynamic>> filteredPayments = getFilteredPayments();
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFa2d19f),
+        backgroundColor: Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -109,93 +148,122 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             Text(
               'Unverified Payments: $unverifiedPaymentsCount',
               style: const TextStyle(color: Colors.black, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+      body: RefreshIndicator(
+        color: const Color(0xFFa2d19f),
+        onRefresh: _handleRefresh,
+        child: Center(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text("Show/Hide\nVerified Payments", style: TextStyle(fontWeight: FontWeight.bold,),)),
+                  Switch(
+                    value: showVerifiedPayments,
+                    onChanged: (value) {
+                      setState(() {
+                        showVerifiedPayments = value;
+                      });
+                    },
+                    activeTrackColor: const Color(0xFFa2d19f),
+                    activeColor: Colors.white,
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: Colors.grey,
+                  ),
+                ],
               ),
+              const Divider(thickness: 2, color: Color(0xFFa2d19f), indent: 10,endIndent: 10,),
+              isLoaded
+                  ? Expanded(
+                child: ListView.builder(
+                  itemCount: filteredPayments.length,
+                  itemBuilder: (context, userIndex) {
+                    List<dynamic>? bookings = filteredPayments[userIndex]["bookings"];
+                    if (bookings != null && bookings.isNotEmpty) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (var bookingIndex = 0; bookingIndex < bookings.length; bookingIndex++)
+                            if (bookings[bookingIndex] != null)
+                              GestureDetector(
+                                onTap: () {
+                                  dynamic booking = bookings[bookingIndex];
+                                  if (booking != null && booking is Map<String, dynamic>) {
+                                    if (booking.containsKey('tourUid')) {
+                                      String tourUid = booking['tourUid'];
+                                      print("Tour UID: $tourUid");
+
+                                      String receiptImageUrl = booking['receiptImageUrl'].toString();
+                                      String userUid = filteredPayments[userIndex]["uid"] ?? '';
+
+                                      print("Receipt Image URL: $receiptImageUrl");
+
+                                      if (!booking['verified']) {
+                                        _showReceiptDialog(receiptImageUrl, userUid, bookingIndex);
+                                      }
+                                    } else {
+                                      print("Error: 'tourUid' is not present in the booking data");
+                                    }
+                                  } else {
+                                    print("Error: Booking data is null or not a Map");
+                                  }
+                                },
+                                child: Card(
+                                  elevation: 3,
+                                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                  child: ListTile(
+                                    title: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          filteredPayments[userIndex]["username"] ?? "Username not available",
+                                          style: Theme.of(context).textTheme.headline6?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Tour Name: ${bookings[bookingIndex]['tourName']}',
+                                          style: Theme.of(context).textTheme.bodyText1,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Verified: ',
+                                              style: Theme.of(context).textTheme.bodyText1,
+                                            ),
+                                            Icon(
+                                              bookings[bookingIndex]['verified'] == true
+                                                  ? Icons.check_circle
+                                                  : Icons.cancel,
+                                              color: bookings[bookingIndex]['verified'] == true
+                                                  ? const Color(0xFFa2d19f)
+                                                  : Colors.red,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              )
+                  : const CircularProgressIndicator(color: Color(0xFFa2d19f)),
             ],
           ),
         ),
-        body: RefreshIndicator(
-          color: const Color(0xFFa2d19f),
-          onRefresh: _handleRefresh,
-          child: Center(
-          child: isLoaded
-            ? ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, userIndex) {
-            List<dynamic>? bookings = items[userIndex]["bookings"];
-            if (bookings != null && bookings.isNotEmpty) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var bookingIndex = 0; bookingIndex < bookings.length; bookingIndex++)
-                    if (bookings[bookingIndex] != null)
-                      GestureDetector(
-                        onTap: () {
-                          dynamic booking = bookings[bookingIndex];
-                          if (booking != null && booking is Map<String, dynamic>) {
-                            if (booking.containsKey('tourUid')) {
-                              String tourUid = booking['tourUid'];
-                              print("Tour UID: $tourUid");
-
-                              String receiptImageUrl = booking['receiptImageUrl'].toString();
-                              String userUid = items[userIndex]["uid"] ?? '';
-
-                              print("Receipt Image URL: $receiptImageUrl");
-
-                              _showReceiptDialog(receiptImageUrl, userUid, bookingIndex);
-                            } else {
-                              print("Error: 'tourUid' is not present in the booking data");
-                            }
-                          } else {
-                            print("Error: Booking data is null or not a Map");
-                          }
-                        },
-                        child: Card(
-                          elevation: 3,
-                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: ListTile(
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  items[userIndex]["username"] ?? "Username not available",
-                                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Tour Name: ${bookings[bookingIndex]['tourName']}',
-                                  style: Theme.of(context).textTheme.bodyText1,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Verified: ',
-                                      style: Theme.of(context).textTheme.bodyText1,
-                                    ),
-                                    Icon(
-                                      bookings[bookingIndex]['verified'] == true
-                                          ? Icons.check_circle
-                                          : Icons.cancel,
-                                      color: bookings[bookingIndex]['verified'] == true
-                                          ? Colors.green
-                                          : Colors.red,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                ],
-              );
-            } else {
-              return Container();
-            }
-          },
-        )
-            : const CircularProgressIndicator(color: Color(0xFFa2d19f),),
-          ),
       ),
     );
   }

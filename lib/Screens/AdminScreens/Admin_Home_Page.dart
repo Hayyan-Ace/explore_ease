@@ -109,15 +109,18 @@ class _AdminHomePageState extends State<AdminHomePage> {
           elevation: 0,
         ),
         body: RefreshIndicator(
+          color: const Color(0xFFa2d19f),
           onRefresh: _handleRefresh,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildInfoCard('Total Users', totalUsersCount, Icons.person, Colors.blueAccent, Colors.blue),
-                _buildInfoCard('Unverified Payments', totalUnverifiedPaymentsCount, Icons.payment_rounded, Colors.deepOrange, Colors.orange),
-                _buildInfoCard('Active Tours', totalActiveToursCount, Icons.tour_outlined, Colors.green, Colors.lightGreen),
-              ],
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildInfoCard('Total Users', totalUsersCount, Icons.person, Colors.blueAccent, Colors.blue),
+                  _buildInfoCard('Unverified Payments', totalUnverifiedPaymentsCount, Icons.payment_rounded, Colors.deepOrange, Colors.orange),
+                  _buildInfoCard('Active Tours', totalActiveToursCount, Icons.tour_outlined, Colors.green, Colors.lightGreen),
+                ],
+              ),
             ),
           ),
         ),
@@ -128,7 +131,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Widget _buildInfoCard(String title, int count, IconData iconData, Color startColor, Color endColor) {
     return Container(
       padding: const EdgeInsets.all(20),
-      width: 350,
+      width: MediaQuery.of(context).size.width * 0.8, // Use a percentage of the screen width
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -171,7 +174,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   const SizedBox(height: 10),
                   Text(
                     count.toString(),

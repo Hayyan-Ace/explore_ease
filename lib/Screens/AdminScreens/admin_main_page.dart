@@ -42,6 +42,7 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text('Logout Confirmation'),
           content: const Text('Are you sure you want to logout?'),
           actions: <Widget>[
@@ -49,7 +50,7 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.red),),
             ),
             TextButton(
               onPressed: () {
@@ -57,7 +58,7 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
                 AuthenticationRepository.instance.logOut();
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text('Logout'),
+              child: const Text('Logout',style: TextStyle(color: Color(0xFFa2d19f)),),
             ),
           ],
         );
