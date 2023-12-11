@@ -19,6 +19,7 @@ class BookingDialog extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _BookingDialogState createState() => _BookingDialogState();
 }
 
@@ -36,6 +37,7 @@ class _BookingDialogState extends State<BookingDialog> {
 
 
   Future<void> _selectImage() async {
+
     var imagePicker = ImagePicker();
     var pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
 
@@ -92,6 +94,7 @@ class _BookingDialogState extends State<BookingDialog> {
   @override
       Widget build(BuildContext context) {
         return Dialog(
+          backgroundColor: Colors.white,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -100,6 +103,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 width: 150,
                 height: 450,
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   image: DecorationImage(
                     image: FileImage(_receiptImage!),
                     fit: BoxFit.cover,
@@ -111,19 +115,20 @@ class _BookingDialogState extends State<BookingDialog> {
                 child: Container(
                   width: 150,
                   height: 150,
-                  color: Colors.grey, // You can customize the color
+                  color: Colors.transparent,
                   child: const Center(
                     child: Icon(
                       Icons.add_a_photo,
-                      size: 50,
-                      color: Colors.white,
+                      size: 70,
+                      color: Color(0xFFa2d19f),
                     ),
                   ),
                 ),
               ),
+              const SizedBox(height: 10,),
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFa2d19f)),
+                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFa2d19f)),
                 ),
                 onPressed: () {
                   // Handle Confirm Tour button click
@@ -131,6 +136,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 },
                 child: const Text('Confirm Tour',style: TextStyle(color: Colors.black),),
               ),
+              const SizedBox(height: 10,),
             ],
           ),
         );

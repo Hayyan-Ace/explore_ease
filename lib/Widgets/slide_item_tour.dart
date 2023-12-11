@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import 'package:travel_ease_fyp/Widgets/tour_detail_page.dart';
 
 class SlideItem extends StatefulWidget {
@@ -8,12 +9,22 @@ class SlideItem extends StatefulWidget {
   final int index;
   final PageController pageController;
   final String tourID;
+  // ignore: prefer_typing_uninitialized_variables
+  var tourDate;
+  final String duration;
+  final String startDestination;
+  final String endDestination;
+
   SlideItem({
     required this.name,
     required this.imgUrl,
     required this.index,
     required this.pageController,
-    required this.tourID
+    required this.tourID,
+    required this.tourDate,
+    required this.duration,
+    required this.startDestination,
+    required this.endDestination,
   });
 
   @override
@@ -43,7 +54,6 @@ class _SlideItemState extends State<SlideItem> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     double value = (page - widget.index).abs();
@@ -60,23 +70,72 @@ class _SlideItemState extends State<SlideItem> {
       },
       child: Transform.scale(
         scale: scale.clamp(0.5, 1.0),
-        child: Container(
+        child: Card(
+          color: Colors.white,
           margin: const EdgeInsets.only(
             bottom: 20,
             right: 30,
             top: 50,
           ),
-          decoration: BoxDecoration(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(widget.imgUrl),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black87,
-                blurRadius: 20,
-                offset: Offset(20, 20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white, // Change color as needed
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    widget.imgUrl,
+                    fit: BoxFit.cover,
+                    height: 370, // Adjust the height as needed
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15, top: 10, right: 15, bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.name,
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10), // Adjust spacing as needed
+                    Text(
+                      formatTourDate(widget.tourDate),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Duration: ${widget.duration} days',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Text(
+                      'Destination: ${widget.endDestination}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -84,4 +143,13 @@ class _SlideItemState extends State<SlideItem> {
       ),
     );
   }
+
+  String formatTourDate(DateTime? tourDate) {
+    if (tourDate != null) {
+      return DateFormat.yMMMd().format(tourDate); // You can use any desired date format
+    } else {
+      return 'Not Available';
+    }
+  }
+
 }

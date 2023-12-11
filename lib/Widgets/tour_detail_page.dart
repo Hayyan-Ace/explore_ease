@@ -254,13 +254,16 @@ class TourDetailsPage extends StatelessWidget {
   }
 
 
-  String _formatTourDate(Timestamp? tourDate) {
-    if (tourDate != null) {
+  String _formatTourDate(dynamic tourDate) {
+    if (tourDate is Timestamp) {
       DateTime dateTime = tourDate.toDate();
       return DateFormat.yMMMd().format(dateTime); // You can use any desired date format
+    } else if (tourDate is DateTime) {
+      return DateFormat.yMMMd().format(tourDate);
     } else {
       return 'Not Available';
     }
   }
+
 }
 
