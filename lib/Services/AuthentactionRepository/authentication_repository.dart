@@ -27,9 +27,7 @@ class AuthenticationRepository extends GetxController {
 
   // Define the users collection
   late CollectionReference _usersCollection =
-  FirebaseFirestore.instance.collection('users');
-
-
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void onReady() {
@@ -45,10 +43,10 @@ class AuthenticationRepository extends GetxController {
       currentuser?.isAdmin ?? false == true
           ? Get.offAll(() => AdminPanelMain())
           : user == null
-          ? Get.offAll(() => const WelcomeScreen())
-          : user.emailVerified
-          ? Get.offAll(() => const MainPage())
-          : Get.offAll(() => EmailVerificationScreen());
+              ? Get.offAll(() => const WelcomeScreen())
+              : user.emailVerified
+                  ? Get.offAll(() => const MainPage())
+                  : Get.offAll(() => EmailVerificationScreen());
     } else {
       Get.offAll(() => const WelcomeScreen());
     }
@@ -72,13 +70,13 @@ class AuthenticationRepository extends GetxController {
   }
 
   Future<void> signUpWithEmailAndPassword(
-      String email,
-      String password,
-      String username,
-      String fullName,
-      String cnic,
-      String phoneNo,
-      ) async {
+    String email,
+    String password,
+    String username,
+    String fullName,
+    String cnic,
+    String phoneNo,
+  ) async {
     _email = email;
     _username = username;
     _cnic = cnic;
@@ -131,12 +129,6 @@ class AuthenticationRepository extends GetxController {
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Error sign-up service: $e';
-      if (e.code == 'weak-password') {
-        errorMessage = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        errorMessage = 'The account already exists for that email.';
-      } else if (e.code == 'invalid-email')
-        errorMessage = 'The email address is not valid';
 
       Fluttertoast.showToast(
         msg: errorMessage,
@@ -154,7 +146,7 @@ class AuthenticationRepository extends GetxController {
       );
 
       currentuser =
-      await UserRepository().getUserDetails(_auth.currentUser!.uid);
+          await UserRepository().getUserDetails(_auth.currentUser!.uid);
       if (currentuser?.isAdmin == true) {
         Get.offAll(() => const AdminPanelMain());
       } else {
@@ -171,7 +163,7 @@ class AuthenticationRepository extends GetxController {
         errorMessage = 'Invalid email syntax.';
       } else if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
         errorMessage =
-        'An internal error has occurred. [ INVALID_LOGIN_CREDENTIALS ]';
+            'An internal error has occurred. [ INVALID_LOGIN_CREDENTIALS ]';
       }
       Fluttertoast.showToast(msg: errorMessage);
     }
@@ -222,7 +214,7 @@ class AuthenticationRepository extends GetxController {
     try {
       // Check if username exists in Firestore 'users' collection
       var snapshot =
-      await _usersCollection.where('username', isEqualTo: username).get();
+          await _usersCollection.where('username', isEqualTo: username).get();
 
       // If no documents are found, the username is unique
       return true;

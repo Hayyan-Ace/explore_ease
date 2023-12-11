@@ -51,11 +51,11 @@ class _SlideItemState extends State<SlideItem> {
 
     return GestureDetector(
       onTap: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return TourDetailsPage(name: widget.name, imgUrl: widget.imgUrl, tourID: widget.tourID);
-          },
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TourDetailsPage(tourID: widget.tourID),
+          ),
         );
       },
       child: Transform.scale(
