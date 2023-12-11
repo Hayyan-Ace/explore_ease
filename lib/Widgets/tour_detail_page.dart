@@ -1,9 +1,14 @@
+// tour_detail_page.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Widgets/booking_dialoguebox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
 
 class TourDetailsPage extends StatelessWidget {
   final String tourID;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   TourDetailsPage({required this.tourID});
 
@@ -14,16 +19,16 @@ class TourDetailsPage extends StatelessWidget {
         future: FirebaseFirestore.instance.collection('Tour').doc(tourID).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
-            return Center(child: Text('Tour details not available'));
+            return const Center(child: Text('Tour details not available'));
           } else {
             var tourData = snapshot.data!.data() as Map<String, dynamic>?;
 
             if (tourData == null) {
-              return Center(child: Text('Tour details not available'));
+              return const Center(child: Text('Tour details not available'));
             }
 
             return _buildTourDetails(context, tourData);
@@ -33,13 +38,11 @@ class TourDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTourDetails(
-      BuildContext context, Map<String, dynamic> tourData) {
+  Widget _buildTourDetails(BuildContext context, Map<String, dynamic> tourData) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(tourData['imageUrl']),
-          // Replace with your image path
           fit: BoxFit.cover,
         ),
       ),
@@ -58,7 +61,7 @@ class TourDetailsPage extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Card(
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),
@@ -79,7 +82,7 @@ class TourDetailsPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Text(
-            tourData['tourName'],
+            tourData['tourName'] ?? 'Tour Name Not Available',
             style: TextStyle(
               color: Colors.black87,
               fontSize: 32,
@@ -88,16 +91,16 @@ class TourDetailsPage extends StatelessWidget {
           ),
         ),
         _buildDescriptionBox(context, tourData['description'] ?? ''),
-        // Add null check and provide a default value
-        _buildDetailRow("Duration", "${tourData['duration']} days"),
-        _buildDetailRow("Departure Location", tourData['startingPoint']),
-        _buildDetailRow("Destination", tourData['endPoint']),
-        _buildDetailRow("Price", "${tourData['price']} Rupees"),
+        if (tourData['tourDate'] != null) _buildDetailRow("Tour Date", _formatTourDate(tourData['tourDate'])),
+        _buildDetailRow("Duration", "${tourData['duration'] ?? 'Not Available'} days"),
+        _buildDetailRow("Departure Location", tourData['startingPoint'] ?? 'Not Available'),
+        _buildDetailRow("Destination", tourData['endPoint'] ?? 'Not Available'),
+        _buildDetailRow("Price", "${tourData['price'] ?? 'Not Available'} Rupees"),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () => _showBookingDialog(context),
+          onPressed: () => _showBookingDialog(context, tourData),
           style: ElevatedButton.styleFrom(
-            shape: const StadiumBorder(),
+            shape: StadiumBorder(),
             elevation: 20,
             shadowColor: Color(0xFFa2d19f),
             backgroundColor: Color(0xFFa2d19f).withOpacity(0.9),
@@ -112,14 +115,15 @@ class TourDetailsPage extends StatelessWidget {
     );
   }
 
+
+
   Widget _buildDescriptionBox(BuildContext context, String description) {
     return GestureDetector(
-      onTap: () =>
-          _showDescriptionPopup(context, _formatDescription(description)),
+      onTap: () => _showDescriptionPopup(context, _formatDescription(description)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Container(
-          height: 100, // Set a fixed height for a brief description
+          height: 100,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -128,7 +132,7 @@ class TourDetailsPage extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 3,
                 blurRadius: 7,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -136,11 +140,11 @@ class TourDetailsPage extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: Text(
               _formatDescription(description),
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black87,
                 fontSize: 18,
               ),
-              maxLines: 3, // Limit the number of lines for a brief description
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -154,12 +158,13 @@ class TourDetailsPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Tour Description"),
+          backgroundColor: Colors.white,
+          title: const Text("Tour Description"),
           content: Text(description),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
+              child: const Text('Close', style: TextStyle(color: Colors.black)),
             ),
           ],
         );
@@ -168,7 +173,6 @@ class TourDetailsPage extends StatelessWidget {
   }
 
   String _formatDescription(String description) {
-    // Split the description at "Day" + some number + ":" and add a line break before "Day" and after ":"
     List<String> parts = description.split(RegExp(r'(?=Day \d+:)'));
     String formattedDescription = parts.map((part) => '\n$part\n').join();
     return formattedDescription.trim();
@@ -206,16 +210,57 @@ class TourDetailsPage extends StatelessWidget {
     );
   }
 
-  void _showBookingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // Replace with your BookingDialog
-        return BookingDialog(
-          tourName: tourID,
-          tourID: tourID,
-        );
-      },
-    );
+  void _showBookingDialog(BuildContext context, Map<String, dynamic> tourData) async {
+    // Check if the user already has a booking
+    DocumentSnapshot userDoc =
+    await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).get();
+    Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+    if (userData != null && userData['bookings'] != null && (userData['bookings'] as List).isNotEmpty) {
+      // User already has a booking, show an error message or take appropriate action
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('You can only book one tour at a time.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // User does not have a booking, proceed to show the booking dialog
+
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // Replace with your BookingDialog
+          return BookingDialog(
+            tourName: tourData['tourName'] ?? 'Tour Name Not Available',
+            tourID: tourData['tourId'] ?? 'Tour ID Not Available',
+            tourDate: '',
+          );
+        },
+      );
+    }
+  }
+
+
+  String _formatTourDate(Timestamp? tourDate) {
+    if (tourDate != null) {
+      DateTime dateTime = tourDate.toDate();
+      return DateFormat.yMMMd().format(dateTime); // You can use any desired date format
+    } else {
+      return 'Not Available';
+    }
   }
 }
+

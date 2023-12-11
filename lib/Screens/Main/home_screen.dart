@@ -23,10 +23,10 @@ class _HomeScreenState extends State<HomeScreen>{
             padding: EdgeInsets.only(top: 70, left: 20),
             child: Row(
               children: [
-                Icon(Icons.menu, size: 30, color: Colors.black54,),
+                const Icon(Icons.menu, size: 30, color: Colors.black54,),
                 Expanded(child: Container()),
                 Container(
-                  margin: EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(right: 20),
                   width: 50,
                   height: 50,
 

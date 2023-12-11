@@ -3,14 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
 class BookingDialog extends StatefulWidget {
-
   final String tourName;
   final String tourID;
-  BookingDialog({required this.tourName, required this.tourID});
+  final String tourDate; // Add this line
+
+  BookingDialog({
+  required this.tourName,
+  required this.tourID,
+  required this.tourDate,
+  });
 
   @override
   _BookingDialogState createState() => _BookingDialogState();
@@ -21,6 +27,12 @@ class _BookingDialogState extends State<BookingDialog> {
   bool _imageSelected = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late String _receiptImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _receiptImageUrl = '';
+  }
 
 
   Future<void> _selectImage() async {
@@ -47,66 +59,82 @@ class _BookingDialogState extends State<BookingDialog> {
   }
 
   Future<void> _confirmTour() async {
+    // Ensure _receiptImageUrl is initialized before using it
+    if (_receiptImageUrl == null || _receiptImageUrl.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Please upload receipt",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else {
+      // Update user's database with booking information
+      await FirebaseFirestore.instance.collection('users').doc(
+          _auth.currentUser!.uid).update({
+        'bookings': FieldValue.arrayUnion([
+          {
+            'tourName': widget.tourName,
+            'tourUid': widget.tourID,
+            'receiptImageUrl': _receiptImageUrl,
+            'verified': false,
+          }
+        ]),
+      });
 
-    // Update user's database with booking information
-    await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).update({
-      'bookings': FieldValue.arrayUnion([
-        {
-          'tourName' : widget.tourName,
-          'tourUid': widget.tourID,
-          'receiptImageUrl': _receiptImageUrl,
-          'verified': false,
-        }
-      ]),
-    });
-
-    // Navigate back to the tour details page
-    Navigator.pop(context);
+      // Move this part outside the _confirmTour method
+      Navigator.pop(context);
+    }
   }
+
   @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _imageSelected
-              ? Container(
-            width: 150,
-            height: 450,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: FileImage(_receiptImage!),
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
-              : GestureDetector(
-            onTap: _selectImage,
-            child: Container(
-              width: 150,
-              height: 150,
-              color: Colors.grey, // You can customize the color
-              child: const Center(
-                child: Icon(
-                  Icons.add_a_photo,
-                  size: 50,
-                  color: Colors.white,
+      Widget build(BuildContext context) {
+        return Dialog(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _imageSelected
+                  ? Container(
+                width: 150,
+                height: 450,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: FileImage(_receiptImage!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )
+                  : GestureDetector(
+                onTap: _selectImage,
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  color: Colors.grey, // You can customize the color
+                  child: const Center(
+                    child: Icon(
+                      Icons.add_a_photo,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
-            ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFa2d19f)),
+                ),
+                onPressed: () {
+                  // Handle Confirm Tour button click
+                  _confirmTour();
+                },
+                child: const Text('Confirm Tour',style: TextStyle(color: Colors.black),),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              // Handle Confirm Tour button click
-              _confirmTour();
-            },
-            child: Text('Confirm Tour'),
-          ),
-        ],
-      ),
-    );
-  }
-
+        );
+      }
 }
 
 
