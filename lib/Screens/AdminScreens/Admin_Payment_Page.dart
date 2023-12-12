@@ -43,6 +43,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text('Receipt Image'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

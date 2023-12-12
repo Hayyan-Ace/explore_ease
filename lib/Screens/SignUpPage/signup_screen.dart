@@ -6,8 +6,7 @@ import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_
 class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _cnicController = TextEditingController();
