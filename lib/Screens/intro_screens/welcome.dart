@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../LoginPage/login_screen.dart';
@@ -17,6 +18,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   PageController _controller = PageController();
   bool onLastPage = false;
+  final deviceStorage = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +76,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       primary: Color(0xFF172614),
                       onPrimary: Color(0xFFa2d19f),
                     ),
-                    child: Text('Done'),
+                        child: Text('Done'),
                   )
                       : ElevatedButton(
                     onPressed: () {

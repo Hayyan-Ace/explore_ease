@@ -18,10 +18,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool rememberUser = false;
   bool isPasswordVisible = false;
 
+
   @override
   Widget build(BuildContext context) {
     myColor = const Color(0xFFa2d19f);
     mediaSize = MediaQuery.of(context).size;
+
+
+
     return Container(
       decoration: BoxDecoration(
         color: myColor,
