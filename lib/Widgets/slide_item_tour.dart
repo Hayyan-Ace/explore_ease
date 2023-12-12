@@ -96,7 +96,7 @@ class _SlideItemState extends State<SlideItem> {
                   child: CachedNetworkImage(
                     imageUrl: widget.imgUrl,
                     fit: BoxFit.cover,
-                    height: 370, // Adjust the height as needed
+                    height: 420, // Adjust the height as needed
                     placeholder: (context, url) => CircularProgressIndicator(),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                   ),

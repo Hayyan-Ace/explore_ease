@@ -19,7 +19,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
 
   // Add a GlobalKey for the RefreshIndicator
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
 
   void _editTourDetails(Map<String, dynamic> tourDetails) {
     Navigator.push(
@@ -61,17 +61,23 @@ class _AdminToursPageState extends State<AdminToursPage> {
   }
 
   Future<void> _searchTours(String query) async {
-    // Implement tour search logic based on your requirements
-    // For now, let's filter tours based on the tourName
-    List<Map<String, dynamic>> filteredList = items
-        .where((tour) =>
-            tour["tourName"].toLowerCase().contains(query.toLowerCase()))
-        .toList();
+    if (query.isEmpty) {
+      // If the search query is empty, reload the original data
+      await _fetchTourData();
+    } else {
+      // Implement tour search logic based on your requirements
+      // For now, let's filter tours based on the tourName
+      List<Map<String, dynamic>> filteredList = items
+          .where((tour) =>
+          tour["tourName"].toLowerCase().contains(query.toLowerCase()))
+          .toList();
 
-    setState(() {
-      items = filteredList;
-    });
+      setState(() {
+        items = filteredList;
+      });
+    }
   }
+
 
   // Implement the refresh logic
   Future<void> _handleRefresh() async {
@@ -171,7 +177,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
                       hintStyle: TextStyle(color: Colors.grey.shade400),
                       border: InputBorder.none,
                       contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 20),
+                      const EdgeInsets.symmetric(horizontal: 20),
                     ),
                   ),
                 ),
@@ -193,83 +199,74 @@ class _AdminToursPageState extends State<AdminToursPage> {
             child: Center(
               child: isLoaded
                   ? RefreshIndicator(
-                      color: const Color(0xFFa2d19f),
-                      // Set the GlobalKey
-                      key: _refreshIndicatorKey,
-                      // Set the onRefresh callback
-                      onRefresh: _handleRefresh,
-                      child: ListView.builder(
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            elevation: 3,
-                            color: Colors.white,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            child: ListTile(
-                              leading: const CircleAvatar(
-                                backgroundColor: Color(0xFFa2d19f),
-                                // Set to your desired background color
-                                child: Icon(Icons.location_pin),
+                color: const Color(0xFFa2d19f),
+                // Set the GlobalKey
+                key: _refreshIndicatorKey,
+                // Set the onRefresh callback
+                onRefresh: _handleRefresh,
+                child: ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      elevation: 3,
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          backgroundColor: Color(0xFFa2d19f), // Set to your desired background color
+                          child: Icon(Icons.location_pin),
+                        ),
+                        title: Row(
+                          children: [
+                            Text(
+                              items[index]["tourName"] ?? "Not Given",
+                              style: Theme.of(context).textTheme.headline6?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
-                              title: Row(
-                                children: [
-                                  Text(
-                                    items[index]["tourName"] ?? "Not Given",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              subtitle: Text(
-                                items[index]["description"] ?? "",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.copyWith(height: 1.5),
-                                maxLines: 5,
-                              ),
-                              trailing: PopupMenuButton<String>(
-                                color: Colors.white,
-                                onSelected: (value) {
-                                  if (value == 'edit') {
-                                    _editTourDetails(items[index]);
-                                  } else if (value == 'delete') {
-                                    _showDeleteDialog(items[index]["tourId"]);
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                  const PopupMenuItem<String>(
-                                    value: 'edit',
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('Edit Tour'),
-                                    ),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('Delete Tour'),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              contentPadding: const EdgeInsets.all(
-                                  16), // Adjust padding as needed
                             ),
-                          );
-                        },
+                          ],
+                        ),
+                        subtitle: Text(
+                          items[index]["description"] ?? "",
+                          style:
+                          Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                          maxLines: 5,
+                        ),
+                        trailing: PopupMenuButton<String>(
+                          color: Colors.white,
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              _editTourDetails(items[index]);
+                            } else if (value == 'delete') {
+                              _showDeleteDialog(items[index]["tourId"]);
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                              value: 'edit',
+                              child: ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('Edit Tour'),
+                              ),
+                            ),
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: ListTile(
+                                leading: Icon(Icons.delete),
+                                title: Text('Delete Tour'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        contentPadding: const EdgeInsets.all(16), // Adjust padding as needed
                       ),
-                    )
+                    );
+                  },
+                ),
+              )
                   : const CircularProgressIndicator(
-                      color: Color(0xFFa2d19f),
-                    ),
+                color: Color(0xFFa2d19f),
+              ),
             ),
           ),
         ],

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -163,7 +164,13 @@ class _EditTourPageState extends State<EditTourPage> {
                   ),
 
                   onPressed: () async {
-
+                    // Check if all fields are filled
+                    if (!_areAllFieldsFilled()) {
+                      _showToast(
+                        'Please fill in all fields and select a date and image.',
+                      );
+                      return;
+                    }
                     // Update the image URL if a new image is selected
                     if (_image != null) {
                       String? imageUrl = await uploadImageToFirebaseStorage(
@@ -195,8 +202,12 @@ class _EditTourPageState extends State<EditTourPage> {
                           .doc(widget.tourDetails["tourId"])
                           .update(widget.tourDetails);
                       print('Document updated successfully!');
+
+                      // Show a toast indicating successful updation
+                      _showToast('Tour updated successfully!', backgroundColor: Colors.green);
                     } catch (e) {
                       print('Error updating document: $e');
+                      _showToast('Error updating the tour. Please try again.');
                       // Handle the error appropriately
                     }
                     // Navigate back or perform any other action after saving
@@ -312,4 +323,38 @@ class _EditTourPageState extends State<EditTourPage> {
       });
     }
   }
+
+  bool _areAllFieldsFilled() {
+    print('Name: ${nameController.text.isNotEmpty}');
+    print('Description: ${descriptionController.text.isNotEmpty}');
+    print('Starting Point: ${startingPointController.text.isNotEmpty}');
+    print('End Point: ${endPointController.text.isNotEmpty}');
+    print('Price: ${priceController.text.isNotEmpty}');
+    print('Duration: ${durationController.text.isNotEmpty}');
+    print('Selected Date: ${_selectedDate != null}');
+    print('Image: ${_image != null}');
+
+    return nameController.text.isNotEmpty &&
+        descriptionController.text.isNotEmpty &&
+        startingPointController.text.isNotEmpty &&
+        endPointController.text.isNotEmpty &&
+        priceController.text.isNotEmpty &&
+        durationController.text.isNotEmpty &&
+        _selectedDate != null;
+  }
+
+
+  void _showToast(String message, {Color? backgroundColor, Color? textColor}) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: backgroundColor ?? Colors.red,
+      textColor: textColor ?? Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+
 }

@@ -86,7 +86,18 @@ class _BookingDialogState extends State<BookingDialog> {
         ]),
       });
 
-      // Move this part outside the _confirmTour method
+      // Show toast when tour is confirmed
+      Fluttertoast.showToast(
+        msg: 'Booking Confirmed!',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+
+      // Close the dialog
       Navigator.pop(context);
     }
   }

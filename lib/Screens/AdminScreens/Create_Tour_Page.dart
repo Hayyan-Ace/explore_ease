@@ -50,9 +50,30 @@ class _CreateTourPageState extends State<CreateTourPage> {
     final String price = _priceController.text;
     final String duration = _durationController.text;
 
+    // Check if any field is empty
+    if (name.isEmpty ||
+        description.isEmpty ||
+        startingPoint.isEmpty ||
+        endPoint.isEmpty ||
+        price.isEmpty ||
+        duration.isEmpty ||
+        _selectedDate == null ||
+        _image == null) {
+      // Show a toast indicating that all fields must be filled
+      Fluttertoast.showToast(
+          msg: 'Please fill in all fields and select a date and image.',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return;
+    }
+
     // Omitting the tourId field so Firestore will auto-generate a document ID
     DocumentReference tourDocumentReference =
-        await FirebaseFirestore.instance.collection('Tour').add({
+    await FirebaseFirestore.instance.collection('Tour').add({
       'tourName': name,
       'description': description,
       'startingPoint': startingPoint,
@@ -76,9 +97,29 @@ class _CreateTourPageState extends State<CreateTourPage> {
     }).then((_) {
       // Image URL and tourId updated successfully
       print('Image URL and tourId updated in Firestore');
+
+      // Show a toast indicating successful tour creation
+      Fluttertoast.showToast(
+          msg: 'Tour created successfully!',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }).catchError((error) {
       // Handle errors during the image URL and tourId update
       print('Error updating image URL and tourId in Firestore: $error');
+
+      // Show a toast indicating an error
+      Fluttertoast.showToast(
+          msg: 'Error creating the tour. Please try again.',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     });
 
     // Successfully added tour to Firebase
@@ -136,8 +177,6 @@ class _CreateTourPageState extends State<CreateTourPage> {
               _buildEditableField('Name', _nameController, TextInputType.text),
               // Remove the Tour ID field from the form
               // _buildTextField(_tourIdController, 'Tour ID'),
-              _buildEditableField(
-                  'Description', _descriptionController, TextInputType.text),
               _buildEditableField('Starting Point', _startingPointController,
                   TextInputType.text),
               _buildEditableField(
@@ -146,6 +185,7 @@ class _CreateTourPageState extends State<CreateTourPage> {
                   'Price', _priceController, TextInputType.number),
               _buildEditableField(
                   'Duration', _durationController, TextInputType.number),
+              _buildEditableDescriptionField('Description', _descriptionController),
               const SizedBox(height: 16),
               GestureDetector(
                 onTap: getImage,
@@ -213,6 +253,21 @@ class _CreateTourPageState extends State<CreateTourPage> {
     );
   }
 
+  Widget _buildEditableDescriptionField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        maxLines: 10,
+        textInputAction: TextInputAction.newline, // Enable new-line action
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
   Widget _buildEditableField(
     String label,
     TextEditingController controller,
@@ -257,10 +312,13 @@ class _CreateTourPageState extends State<CreateTourPage> {
       },
     );
 
+
+
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
       });
     }
   }
+
 }

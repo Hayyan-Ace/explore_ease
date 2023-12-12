@@ -45,38 +45,40 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: const Text('Receipt Image'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(receiptImageUrl),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFa2d19f),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.network(receiptImageUrl),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFa2d19f),
+                  ),
+                  onPressed: () async {
+                    await approvePayment(userUid, bookingIndex);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Verify Payment', style: TextStyle(color: Colors.black)),
                 ),
-                onPressed: () async {
-                  await approvePayment(userUid, bookingIndex);
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Verify Payment', style: TextStyle(color: Colors.black)),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await disapprovePayment(userUid, bookingIndex);
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                ElevatedButton(
+                  onPressed: () async {
+                    await disapprovePayment(userUid, bookingIndex);
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  child: const Text('Disapprove Payment', style: TextStyle(color: Colors.black)),
                 ),
-                child: const Text('Disapprove Payment', style: TextStyle(color: Colors.black)),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
     );
   }
+
 
   Future<void> approvePayment(String uid, int bookingIndex) async {
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
@@ -98,9 +100,11 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     if (currentBookings != null) {
       currentBookings.removeAt(bookingIndex);
 
+      // Update the 'bookings' field with the modified list
       await userReference.update({'bookings': currentBookings});
     }
   }
+
 
   int countUnverifiedPayments() {
     int count = 0;

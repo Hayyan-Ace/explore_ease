@@ -165,8 +165,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                     margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     elevation: 3,
                     child: ListTile(
-                      onTap: () {
+                      onTap: () {if (item["isAdmin"] != true) {
                         _showUserDetails(item["uid"], item);
+                      }
                       },
                       contentPadding: const EdgeInsets.all(16),
                       leading: ClipRRect(

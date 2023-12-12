@@ -16,7 +16,7 @@ class MainPage extends StatefulWidget{
 class _MainPageState extends State<MainPage>{
     List pages = [
     const HomeScreen(),
-    const ChatPage(),
+     ChatPage(),
       ProfilePage(),
       const AdminLogoutPage(),
   ];
