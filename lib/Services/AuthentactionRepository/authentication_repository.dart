@@ -6,7 +6,6 @@ import 'package:travel_ease_fyp/Screens/AdminScreens/admin_main_page.dart';
 import 'package:travel_ease_fyp/Screens/EmailVerification/email_verification.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../../Models/User/user_model.dart';
 import '../../Screens/intro_screens/welcome.dart';
@@ -15,7 +14,6 @@ import '../UserRepository/user_repository.dart';
 class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();
   MyAppUser? currentuser;
-  final deviceStorage = GetStorage();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
