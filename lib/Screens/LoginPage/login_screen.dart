@@ -16,10 +16,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool rememberUser = false;
+  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    myColor = Color(0xFFa2d19f);
+    myColor = const Color(0xFFa2d19f);
     mediaSize = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
@@ -113,9 +114,20 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : Icon(Icons.done),
+        suffixIcon: isPassword
+            ? IconButton(
+          icon: Icon(
+            isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              isPasswordVisible = !isPasswordVisible;
+            });
+          },
+        )
+            : const SizedBox.shrink(),
       ),
-      obscureText: isPassword,
+      obscureText: isPassword && !isPasswordVisible,
     );
   }
 
@@ -134,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextButton.styleFrom(
             foregroundColor: Colors.black87,
           ),
-          child: Text("Don't have an account? Sign up here"),
+          child: const Text("Don't have an account? Sign up here"),
         ),
       ],
     );
@@ -160,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: myColor.withOpacity(0.9),
         minimumSize: const Size.fromHeight(60),
       ),
-      child: Text(
+      child: const Text(
         'Login',
         style: TextStyle(color: Colors.black87),
       ),

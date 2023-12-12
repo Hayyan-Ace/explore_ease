@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_ease_fyp/Services/AuthentactionRepository/authentication_repository.dart';
 
 class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _cnicController = TextEditingController();
   final TextEditingController _phoneNoController = TextEditingController();
 
-
   late Color myColor;
 
   SignUpScreen({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -54,16 +54,26 @@ class SignUpScreen extends StatelessWidget {
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                decoration:
+                    const InputDecoration(labelText: 'Confirm Password'),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: _cnicController,
-                decoration: const InputDecoration(labelText: 'CNIC (13 digits)'),
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(13), // Limit to 13 digits
+                ],
+                decoration:
+                    const InputDecoration(labelText: 'CNIC (13 digits)'),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: _phoneNoController,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10), // Limit to 10 digits
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Phone No',
                   prefixText: '+92 ',
@@ -79,14 +89,16 @@ class SignUpScreen extends StatelessWidget {
                   minimumSize: const Size.fromHeight(60),
                 ),
                 onPressed: () => _registerUser(),
-                child: const Text('Sign Up', style: TextStyle(color: Colors.black87)),
+                child: const Text('Sign Up',
+                    style: TextStyle(color: Colors.black87)),
               ),
               const SizedBox(height: 10),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text('Already have an account? Log in here',style: TextStyle(color: Colors.black87)),
+                child: const Text('Already have an account? Log in here',
+                    style: TextStyle(color: Colors.black87)),
               ),
             ],
           ),
@@ -109,7 +121,8 @@ class SignUpScreen extends StatelessWidget {
     }
 
     // Validate password and confirm password
-    if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
+    if (_passwordController.text.trim() !=
+        _confirmPasswordController.text.trim()) {
       showToast("Password and confirm password do not match.");
       return;
     }
@@ -122,7 +135,7 @@ class SignUpScreen extends StatelessWidget {
     }
 
     try {
-           // All checks passed, proceed with user registration
+      // All checks passed, proceed with user registration
       await AuthenticationRepository.instance.signUpWithEmailAndPassword(
         _emailController.text.trim(),
         _passwordController.text.trim(),
@@ -144,5 +157,4 @@ class SignUpScreen extends StatelessWidget {
       gravity: ToastGravity.TOP,
     );
   }
-
 }
