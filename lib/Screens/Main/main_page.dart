@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Logout_Page.dart';
 import 'package:travel_ease_fyp/Screens/Main/chat_screen.dart';
 import 'package:travel_ease_fyp/Screens/Main/profile_page.dart';
 
+import '../../Services/AuthentactionRepository/authentication_repository.dart';
 import 'home_screen.dart';
 
 class MainPage extends StatefulWidget{
@@ -15,15 +17,23 @@ class _MainPageState extends State<MainPage>{
     List pages = [
     const HomeScreen(),
     const ChatPage(),
-      ProfilePage()
+      ProfilePage(),
+      const AdminLogoutPage(),
   ];
 
-  int currentIndexNavBar = 0;
-  void onTapNavBar(int index){
-    setState(() {
-    currentIndexNavBar = index;
-    });
-  }
+    int currentIndexNavBar = 0;
+
+    void onTapNavBar(int index) {
+      if (index == pages.length - 1) {
+        // If the "Logout" button is tapped, show confirmation dialog
+        showLogoutConfirmationDialog();
+      } else {
+        setState(() {
+          currentIndexNavBar = index;
+        });
+      }
+    }
+
 
 
   @override
@@ -41,12 +51,43 @@ class _MainPageState extends State<MainPage>{
 
           items: const [
           BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
-          BottomNavigationBarItem(label: 'Chat',icon: Icon(Icons.chat)),
-          BottomNavigationBarItem(label: 'Settings',icon: Icon(Icons.settings)),
-        ]
+          BottomNavigationBarItem(label: 'Tour Group',icon: Icon(Icons.chat)),
+          BottomNavigationBarItem(label: 'Profile',icon: Icon(Icons.person_2)),
+          BottomNavigationBarItem(label: 'Logout',icon: Icon(Icons.logout, color: Colors.red,),),
+
+          ]
       ),
     );
   }
 
 
+
+    void showLogoutConfirmationDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text('Logout Confirmation'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text('Cancel', style: TextStyle(color: Colors.red),),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Perform logout action
+                  AuthenticationRepository.instance.logOut();
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text('Logout',style: TextStyle(color: Color(0xFFa2d19f)),),
+              ),
+            ],
+          );
+        },
+      );
+    }
 }
