@@ -201,73 +201,67 @@ class _AdminToursPageState extends State<AdminToursPage> {
                       child: ListView.builder(
                         itemCount: items.length,
                         itemBuilder: (context, index) {
-                          return Dismissible(
-                            key: Key(items[index]["tourId"]),
-                            onDismissed: (direction) {
-                              _deleteTour(items[index]["tourId"]);
-                            },
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20),
-                              child: const Icon(
-                                Icons.delete,
+                          return Card(
+                            elevation: 3,
+                            color: Colors.white,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            child: ListTile(
+                              leading: const CircleAvatar(
+                                backgroundColor: Color(0xFFa2d19f),
+                                // Set to your desired background color
+                                child: Icon(Icons.location_pin),
+                              ),
+                              title: Row(
+                                children: [
+                                  Text(
+                                    items[index]["tourName"] ?? "Not Given",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Text(
+                                items[index]["description"] ?? "",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    ?.copyWith(height: 1.5),
+                                maxLines: 5,
+                              ),
+                              trailing: PopupMenuButton<String>(
                                 color: Colors.white,
+                                onSelected: (value) {
+                                  if (value == 'edit') {
+                                    _editTourDetails(items[index]);
+                                  } else if (value == 'delete') {
+                                    _showDeleteDialog(items[index]["tourId"]);
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  const PopupMenuItem<String>(
+                                    value: 'edit',
+                                    child: ListTile(
+                                      leading: Icon(Icons.edit),
+                                      title: Text('Edit Tour'),
+                                    ),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: ListTile(
+                                      leading: Icon(Icons.delete),
+                                      title: Text('Delete Tour'),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            child: Card(
-                              elevation: 3,
-                              color: Colors.white,
-                              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                              child: ListTile(
-                                leading: const CircleAvatar(
-                                  backgroundColor: Color(0xFFa2d19f), // Set to your desired background color
-                                  child: Icon(Icons.location_pin),
-                                ),
-                                title: Row(
-                                  children: [
-                                    Text(
-                                      items[index]["tourName"] ?? "Not Given",
-                                      style: Theme.of(context).textTheme.headline6?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                subtitle: Text(
-                                  items[index]["description"] ?? "",
-                                  style:
-                                  Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
-                                  maxLines: 5,
-                                ),
-                                trailing: PopupMenuButton<String>(
-                                  color: Colors.white,
-                                  onSelected: (value) {
-                                    if (value == 'edit') {
-                                      _editTourDetails(items[index]);
-                                    } else if (value == 'delete') {
-                                      _showDeleteDialog(items[index]["tourId"]);
-                                    }
-                                  },
-                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                    const PopupMenuItem<String>(
-                                      value: 'edit',
-                                      child: ListTile(
-                                        leading: Icon(Icons.edit),
-                                        title: Text('Edit Tour'),
-                                      ),
-                                    ),
-                                    const PopupMenuItem<String>(
-                                      value: 'delete',
-                                      child: ListTile(
-                                        leading: Icon(Icons.delete),
-                                        title: Text('Delete Tour'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                contentPadding: const EdgeInsets.all(16), // Adjust padding as needed
-                              ),
+                              contentPadding: const EdgeInsets.all(
+                                  16), // Adjust padding as needed
                             ),
                           );
                         },
