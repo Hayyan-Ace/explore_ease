@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -92,10 +93,12 @@ class _SlideItemState extends State<SlideItem> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    widget.imgUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.imgUrl,
                     fit: BoxFit.cover,
                     height: 370, // Adjust the height as needed
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
               ),
