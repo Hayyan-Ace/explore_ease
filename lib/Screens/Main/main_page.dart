@@ -44,6 +44,7 @@ class _MainPageState extends State<MainPage>{
           currentIndex: currentIndexNavBar,
           onTap: onTapNavBar,
           unselectedFontSize: 0,
+          elevation: 0,
           selectedIconTheme: const IconThemeData(color: Color(0xFFa2d19f)), // Set the default color for selected icons
           unselectedIconTheme: const IconThemeData(color: Colors.black), // Set the default color for unselected icons
           selectedItemColor: Color(0xFFa2d19f), // Set the font color for the selected item
