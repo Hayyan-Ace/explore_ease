@@ -31,6 +31,9 @@ class SignUpScreen extends StatelessWidget {
             children: [
               TextField(
                 controller: _fullNameController,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+                ],
                 decoration: const InputDecoration(labelText: 'Full Name'),
               ),
               SizedBox(height: 10),

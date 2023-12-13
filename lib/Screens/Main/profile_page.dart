@@ -20,8 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _phoneNoController = TextEditingController();
   final TextEditingController _cnicController = TextEditingController();
 
-  String _profileImageUrl =
-      'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+  late  String _profileImageUrl ;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             _profileImageUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
                           }
                         }
+
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),

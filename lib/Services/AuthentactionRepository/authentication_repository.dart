@@ -170,6 +170,7 @@ class AuthenticationRepository extends GetxController {
   Future<void> sendVerificationEmail() async {
     try {
       await _auth.currentUser?.sendEmailVerification();
+
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Error sending verification email: $e';
       Fluttertoast.showToast(
