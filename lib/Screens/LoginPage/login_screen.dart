@@ -24,8 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
     myColor = const Color(0xFFa2d19f);
     mediaSize = MediaQuery.of(context).size;
 
-
-
     return Container(
       decoration: BoxDecoration(
         color: myColor,

@@ -98,13 +98,13 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'USERS',
               style: TextStyle(color: Colors.black, letterSpacing: 1.5, fontWeight: FontWeight.bold, fontSize: 24),
             ),
             Text(
               'Total Users: $totalUsers',
-              style: TextStyle(color: Colors.black, fontSize: 12),
+              style: const TextStyle(color: Colors.black, fontSize: 12),
             ),
           ],
         ),
@@ -113,7 +113,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         color: myColor,
         onRefresh: _refreshData,
         child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -174,7 +174,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                         borderRadius: BorderRadius.circular(10),
                         child: CircleAvatar(
                           backgroundColor: myColor,
-                          child: Icon(Icons.person),
+                          child: const Icon(Icons.person),
                         ),
                       ),
                       title: Row(

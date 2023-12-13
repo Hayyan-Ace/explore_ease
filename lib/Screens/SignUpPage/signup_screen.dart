@@ -32,7 +32,7 @@ class SignUpScreen extends StatelessWidget {
               TextField(
                 controller: _fullNameController,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
                 ],
                 decoration: const InputDecoration(labelText: 'Full Name'),
               ),
