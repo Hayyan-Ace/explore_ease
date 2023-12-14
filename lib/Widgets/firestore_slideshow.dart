@@ -8,10 +8,15 @@ class SlideshowScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime currentDate = DateTime.now();
+
     return Container(
       height: 300, // Adjust the height as needed
       child: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('Tour').snapshots(),
+        stream: _firestore
+            .collection('Tour')
+            .where('tourDate', isGreaterThan: Timestamp.fromDate(currentDate))
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
