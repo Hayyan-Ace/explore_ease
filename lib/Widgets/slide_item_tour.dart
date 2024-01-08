@@ -70,7 +70,7 @@ class _SlideItemState extends State<SlideItem> {
         );
       },
       child: Transform.scale(
-        scale: scale.clamp(0.5, 1.0),
+        scale: scale,
         child: Card(
           color: Colors.white,
           margin: const EdgeInsets.only(
@@ -78,7 +78,7 @@ class _SlideItemState extends State<SlideItem> {
             right: 30,
             top: 50,
           ),
-          elevation: 5,
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
