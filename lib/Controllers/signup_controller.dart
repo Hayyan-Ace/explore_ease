@@ -6,6 +6,4 @@ class SignUpController extends GetxController{
   static SignUpController get instance => Get.find();
 
 
-
-
 }

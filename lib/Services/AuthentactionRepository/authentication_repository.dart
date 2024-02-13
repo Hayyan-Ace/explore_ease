@@ -5,9 +5,9 @@ import 'package:get/get.dart';
 import 'package:travel_ease_fyp/Screens/AdminScreens/admin_main_page.dart';
 import 'package:travel_ease_fyp/Screens/EmailVerification/email_verification.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
-import 'package:travel_ease_fyp/Screens/Main/main_page.dart';
 
 import '../../Models/User/user_model.dart';
+import '../../Screens/UserScreens/main_page.dart';
 import '../../Screens/intro_screens/welcome.dart';
 import '../UserRepository/user_repository.dart';
 

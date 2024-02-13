@@ -6,6 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
+import 'package:travel_ease_fyp/Screens/UserScreens/Profile/profile_controller.dart';
+
+import 'profile_field.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -24,6 +28,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final profileController = Provider.of<ProfileController>(context);
+
+    _profileImageUrl = profileController.profileImageUrl;
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -52,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
           } else {
             // Data has been successfully fetched, display it
             Map<String, dynamic>? userData =
-                snapshot.data!.data() as Map<String, dynamic>?;
+            snapshot.data!.data() as Map<String, dynamic>?;
 
             if (userData != null) {
               // Set the text in the controllers
@@ -73,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final result = await showMenu(
                           context: context,
                           position:
-                              const RelativeRect.fromLTRB(100, 200, 50, 0),
+                          const RelativeRect.fromLTRB(100, 200, 50, 0),
                           items: const [
                             PopupMenuItem(
                               child: Text('Upload'),
@@ -91,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           if (result == 'change') {
                             // Open the gallery to select an image
                             File? imageFile =
-                                await _pickImage(ImageSource.gallery);
+                            await _pickImage(ImageSource.gallery);
                             if (imageFile != null) {
                               // Upload the selected image to Firebase
                               String imageUrl = await _uploadImage(
@@ -242,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .update({'profilePicture': downloadURL}); // Use 'profilePicture' here
+          .update({'profilePicture': downloadURL}); 
 
       return downloadURL;
     } catch (error) {
@@ -252,41 +262,4 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class ProfileField extends StatelessWidget {
-  final String label;
-  final String value;
-  final TextEditingController? controller;
-  final bool readOnly; // Add this property
 
-  ProfileField({
-    super.key,
-    required this.label,
-    required this.value,
-    this.controller,
-    this.readOnly = false, // Set a default value
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: TextField(
-                controller: controller,
-                readOnly: readOnly, // Set readOnly property
-                decoration: InputDecoration(
-                  labelText: label,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
