@@ -89,22 +89,27 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
 
   Future<void> approvePayment(String uid, int bookingIndex) async {
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
+    var groupReference = FirebaseFirestore.instance.collection('groups');
 
     var currentBookings = (await userReference.get()).data()?['bookings'] as List<dynamic>?;
-
     if (currentBookings != null) {
       currentBookings[bookingIndex]['verified'] = true;
 
       await userReference.update({'bookings': currentBookings});
 
       // After verifying the payment, add the user to the respective tour group
-      String groupName = currentBookings[bookingIndex]['tourName']; // Assuming the tour name is used as the group name
-      String userName = ''; // You need to obtain the user's name from Firestore or another source
-      String groupId = ''; // You need to obtain the group ID from Firestore or another source
-      await addGroupMember(groupName, uid, userName, groupId);
+      String tourName = currentBookings[bookingIndex]['tourName'];
+      String userName = (await userReference.get()).data()?['username'];
+
+      var querySnapshot = await groupReference.where('groupName', isEqualTo: 'Tour_$tourName').get();
+      if (querySnapshot.docs.isNotEmpty) {
+        String groupId = querySnapshot.docs.first.id; // assuming the first document holds the desired group
+        await addGroupMember('Tour_$tourName', uid, userName, groupId);
+      } else {
+        print('Group not found for tour: $tourName');
+      }
     }
   }
-
 
   Future<void> disapprovePayment(String uid, int bookingIndex) async {
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
@@ -152,14 +157,15 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   Future<void> addGroupMember(String groupName, String uid, String userName, String groupId) async {
     DocumentReference groupDocRef = FirebaseFirestore.instance.collection('groups').doc(groupId);
 
+    // Update the group document to add the user as a member
     await groupDocRef.update({
-      "members": FieldValue.arrayUnion([FieldValue.delete(), "$uid+_+$userName"]),
+      "members": FieldValue.arrayUnion(["$uid+$userName"]),
     });
 
-    // Update user's groups list
+    // Update the user's document to add the group
     DocumentReference userDocRef = FirebaseFirestore.instance.collection('users').doc(uid);
     await userDocRef.update({
-      "groups": FieldValue.arrayUnion([FieldValue.delete(), "$groupId+_+$groupName"]),
+      "groups": FieldValue.arrayUnion(["$groupId+$groupName"]),
     });
   }
 
