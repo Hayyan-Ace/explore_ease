@@ -70,6 +70,16 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             await _deleteUser(userId);
             Navigator.pop(context);
           },
+          onSetAsGuidePressed: () async {
+            // Update the user as a guide in Firestore
+            await collection.doc(userId).update({
+              "isGuide": true,
+              "assignedTour": "", // Set assignedTour to an empty string
+            });
+            // Refresh the data after updating
+            await _fetchUserData();
+            Navigator.pop(context);
+          },
         );
       },
     );

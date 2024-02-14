@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../Services/database_service.dart';
+
 class AdminPaymentPage extends StatefulWidget {
   const AdminPaymentPage({Key? key}) : super(key: key);
+
 
   @override
   State<AdminPaymentPage> createState() => _AdminPaymentPageState();
@@ -13,6 +16,10 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   late List<Map<String, dynamic>> items = [];
   bool isLoaded = false;
   bool showVerifiedPayments = true;
+
+  late String groupId; // Define groupId
+  late String userName; // Define userName
+  late String groupName; // Define groupName
 
   @override
   void initState() {
@@ -89,8 +96,15 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       currentBookings[bookingIndex]['verified'] = true;
 
       await userReference.update({'bookings': currentBookings});
+
+      // After verifying the payment, add the user to the respective tour group
+      String groupName = currentBookings[bookingIndex]['tourName']; // Assuming the tour name is used as the group name
+      String userName = ''; // You need to obtain the user's name from Firestore or another source
+      String groupId = ''; // You need to obtain the group ID from Firestore or another source
+      await addGroupMember(groupName, uid, userName, groupId);
     }
   }
+
 
   Future<void> disapprovePayment(String uid, int bookingIndex) async {
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
@@ -134,6 +148,21 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
           .toList();
     }
   }
+
+  Future<void> addGroupMember(String groupName, String uid, String userName, String groupId) async {
+    DocumentReference groupDocRef = FirebaseFirestore.instance.collection('groups').doc(groupId);
+
+    await groupDocRef.update({
+      "members": FieldValue.arrayUnion([FieldValue.delete(), "$uid+_+$userName"]),
+    });
+
+    // Update user's groups list
+    DocumentReference userDocRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    await userDocRef.update({
+      "groups": FieldValue.arrayUnion([FieldValue.delete(), "$groupId+_+$groupName"]),
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {

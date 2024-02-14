@@ -13,6 +13,18 @@ class AdminToursPage extends StatefulWidget {
 
 class _AdminToursPageState extends State<AdminToursPage> {
   var collection = FirebaseFirestore.instance.collection("Tour");
+  final CollectionReference groupCollection =
+  FirebaseFirestore.instance.collection("groups");
+  final CollectionReference userCollection =
+  FirebaseFirestore.instance.collection("users");
+
+  String? uid; // Make sure to initialize or set the uid value accordingly
+
+
+
+  final CollectionReference _userCollection =
+  FirebaseFirestore.instance.collection("users");
+
   late List<Map<String, dynamic>> items = [];
   bool isLoaded = false;
   late TextEditingController searchController;
@@ -83,6 +95,135 @@ class _AdminToursPageState extends State<AdminToursPage> {
   Future<void> _handleRefresh() async {
     await _fetchTourData();
   }
+
+  Future<void> _assignTourGuide(String tourId) async {
+    // Check if a tour guide is already assigned to this tour
+    var tourDoc = await collection.doc(tourId).get();
+    var tourData = tourDoc.data();
+    if (tourData != null && tourData.containsKey("tourGuide") && tourData["tourGuide"] != "") {
+      // If a tour guide is already assigned, show a message and return
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("A tour guide is already assigned to this tour.")),
+      );
+      return;
+    }
+
+    List<Map<String, dynamic>> guides = [];
+
+    // Fetch list of users where isGuide is true and assignedTour is empty
+    var usersSnapshot = await _userCollection.where("isGuide", isEqualTo: true)
+        .where("assignedTour", isEqualTo: "")
+        .get();
+
+    usersSnapshot.docs.forEach((userDoc) {
+      var userData = userDoc.data();
+      if (userData is Map<String, dynamic>) {
+        guides.add(userData);
+      }
+    });
+
+    // Show dialog to choose a tour guide
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        if (guides.isNotEmpty) {
+          return AlertDialog(
+            title: Text('Assign Tour Guide'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 300,
+              child: ListView.builder(
+                itemCount: guides.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(guides[index]["username"]),
+                    onTap: () {
+                      _assignTourGuideToTour(tourId, guides[index]);
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        } else {
+          return AlertDialog(
+            title: Text('No Guides Available'),
+            content: Text('There are no available tour guides.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _assignTourGuideToTour(String tourId, Map<String, dynamic> guide) async {
+    String tourGuideUid = guide["uid"]; // Assuming "uid" is the key for the UID in the guide map
+    String tourName = items.firstWhere((tour) => tour["tourId"] == tourId)["tourName"];
+
+    // Check if a tour guide is already assigned to this tour
+    var tourDoc = await collection.doc(tourId).get();
+    var tourData = tourDoc.data() as Map<String, dynamic>; // Explicit cast to Map<String, dynamic>
+    if (tourData != null && tourData.containsKey("tourGuide") && tourData["tourGuide"] != "") {
+      // If a tour guide is already assigned, show a message and return
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("A tour guide is already assigned to this tour.")),
+      );
+      return;
+    }
+
+    // Update the assignedTour field in the users collection for the tour guide
+    await _userCollection.doc(tourGuideUid).update({"assignedTour": tourName});
+
+    // Update the tour document with the tour guide UID
+    await collection.doc(tourId).update({
+      "tourGuide": tourGuideUid,
+    });
+
+    // Create a chat group for the tour
+    String groupName = "Tour_$tourName";
+    await _createGroup(guide["username"], tourGuideUid, groupName);
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Tour guide assigned successfully!")),
+    );
+  }
+
+
+
+
+
+  Future<void> _createGroup(String userName, String id, String groupName) async {
+    DocumentReference groupDocumentReference = await groupCollection.add({
+      "groupName": groupName,
+      "groupIcon": "",
+      "admin": "${id}_$userName",
+      "members": [],
+      "groupId": "",
+      "recentMessage": "",
+      "recentMessageSender": "",
+      "activeStatus":false,
+    });
+    // update the members
+    await groupDocumentReference.update({
+      "members": FieldValue.arrayUnion(["${uid}_$userName"]),
+      "groupId": groupDocumentReference.id,
+    });
+
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    await userDocumentReference.update({
+      "groups":
+      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+    });
+  }
+
 
   // Show the delete confirmation dialog
   Future<void> _showDeleteDialog(String tourId) async {
@@ -239,6 +380,9 @@ class _AdminToursPageState extends State<AdminToursPage> {
                               _editTourDetails(items[index]);
                             } else if (value == 'delete') {
                               _showDeleteDialog(items[index]["tourId"]);
+                            } else if (value == 'assign_guide') {
+                              // Add logic to assign a tour guide
+                              _assignTourGuide(items[index]["tourId"]);
                             }
                           },
                           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -254,6 +398,13 @@ class _AdminToursPageState extends State<AdminToursPage> {
                               child: ListTile(
                                 leading: Icon(Icons.delete),
                                 title: Text('Delete Tour'),
+                              ),
+                            ),
+                            const PopupMenuItem<String>(
+                              value: 'assign_guide',
+                              child: ListTile(
+                                leading: Icon(Icons.person),
+                                title: Text('Assign Tour Guide'),
                               ),
                             ),
                           ],
