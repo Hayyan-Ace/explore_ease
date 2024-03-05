@@ -1,22 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Logout_Page.dart';
-import 'package:travel_ease_fyp/Screens/UserScreens/chat_screen.dart';
-import 'package:travel_ease_fyp/Screens/UserScreens/Profile/profile_page.dart';
-
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_logout_page.dart';
+import 'package:travel_ease_fyp/Screens/UserScreens/user_chat_page.dart';
+import 'package:travel_ease_fyp/Screens/Profile/profile_page.dart';
 import '../../Services/AuthentactionRepository/authentication_repository.dart';
-import 'home_screen.dart';
+import 'user_home_page.dart';
 
-class MainPage extends StatefulWidget{
-  const MainPage({super.key});
+class UserMainPage extends StatefulWidget{
+  const UserMainPage({super.key});
   @override
-  _MainPageState createState() => _MainPageState();
+  _UserMainPageState createState() => _UserMainPageState();
 }
 
-class _MainPageState extends State<MainPage>{
+class _UserMainPageState extends State<UserMainPage>{
     List pages = [
-    const HomeScreen(),
-     ChatPage(),
+    const UserHomePage(),
+     UserChatPage(),
       ProfilePage(),
       const AdminLogoutPage(),
   ];

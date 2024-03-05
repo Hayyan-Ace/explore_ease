@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Widgets/widgets.dart';
 
-import '../Screens/UserScreens/chat_page.dart';
+import '../Screens/ChatScreens/chat_page.dart';
 
 class GroupTile extends StatefulWidget {
   final String userName;

@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'User_Detail_Widget.dart';
+import '../../Widgets/User_Detail_Widget.dart';
 
 class AdminUsersPage extends StatefulWidget {
   const AdminUsersPage({super.key});

@@ -7,7 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:travel_ease_fyp/Screens/UserScreens/Profile/profile_controller.dart';
+import 'package:travel_ease_fyp/Screens/Profile/profile_controller.dart';
 
 import 'profile_field.dart';
 

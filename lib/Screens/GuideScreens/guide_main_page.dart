@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Logout_Page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_logout_page.dart';
 import 'package:travel_ease_fyp/Screens/GuideScreens/guide_chat_page.dart';
 import 'package:travel_ease_fyp/Screens/GuideScreens/guide_home_page.dart';
-import 'package:travel_ease_fyp/Screens/UserScreens/chat_screen.dart';
-import 'package:travel_ease_fyp/Screens/UserScreens/Profile/profile_page.dart';
+import 'package:travel_ease_fyp/Screens/UserScreens/user_chat_page.dart';
+import 'package:travel_ease_fyp/Screens/Profile/profile_page.dart';
 import '../../Services/AuthentactionRepository/authentication_repository.dart';
 
 

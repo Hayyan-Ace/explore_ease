@@ -8,8 +8,8 @@ import 'package:travel_ease_fyp/Screens/GuideScreens/guide_main_page.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 
 import '../../Models/User/user_model.dart';
-import '../../Screens/UserScreens/main_page.dart';
-import '../../Screens/intro_screens/welcome.dart';
+import '../../Screens/UserScreens/user_main_page.dart';
+import '../../Screens/IntronScreens/welcome.dart';
 import '../UserRepository/user_repository.dart';
 
 class AuthenticationRepository extends GetxController {
@@ -52,7 +52,7 @@ class AuthenticationRepository extends GetxController {
     } else if (currentuser!.isGuide) {
       Get.offAll(() => const GuidePanelMain());
     } else if (user.emailVerified) {
-      Get.offAll(() => const MainPage());
+      Get.offAll(() => const UserMainPage());
     } else {
       Get.offAll(() => const EmailVerificationScreen());
     }
@@ -117,7 +117,7 @@ class AuthenticationRepository extends GetxController {
         if (firebaseUser.value != null) {
           Get.offAll(() => const EmailVerificationScreen());
         } else {
-          Get.offAll(() => const MainPage());
+          Get.offAll(() => const UserMainPage());
         }
       } else {
 
@@ -151,7 +151,7 @@ class AuthenticationRepository extends GetxController {
         Get.offAll(() => const GuidePanelMain());
       }
       else {
-        Get.offAll(() => const MainPage());
+        Get.offAll(() => const UserMainPage());
       }
 
     } on FirebaseAuthException catch (e) {

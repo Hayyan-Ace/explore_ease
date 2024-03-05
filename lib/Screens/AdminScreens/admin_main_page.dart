@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Home_Page.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Logout_Page.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Payment_Page.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Tours_Page.dart';
-import 'package:travel_ease_fyp/Screens/AdminScreens/Admin_Users_Page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_home_page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_logout_page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_payment_page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_tours_page.dart';
+import 'package:travel_ease_fyp/Screens/AdminScreens/admin_users_page.dart';
 import '../../Services/AuthentactionRepository/authentication_repository.dart';
 
 class AdminPanelMain extends StatefulWidget{

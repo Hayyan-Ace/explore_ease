@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_ease_fyp/LoadungScreen/loading_scrren.dart';
-
-import 'Screens/UserScreens/Profile/profile_controller.dart';
+import 'Screens/Profile/profile_controller.dart';
 import 'Services/AuthentactionRepository/authentication_repository.dart';
 
 

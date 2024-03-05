@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../Services/chat_service.dart';
-import 'chat_page.dart';
+import '../../Services/ChatRepository/chat_service.dart';
+import '../ChatScreens/chat_page.dart';
 
-class ChatPage extends StatefulWidget {
+class UserChatPage extends StatefulWidget {
   @override
-  _ChatPageState createState() => _ChatPageState();
+  _UserChatPageState createState() => _UserChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _UserChatPageState extends State<UserChatPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late User _user;
   late String username = "";

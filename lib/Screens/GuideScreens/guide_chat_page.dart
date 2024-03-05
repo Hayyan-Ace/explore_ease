@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../UserScreens/chat_page.dart';
+import '../ChatScreens/chat_page.dart';
+import 'guide_alerts_page.dart';
 
 class GuideChatPage extends StatefulWidget {
   const GuideChatPage({Key? key}) : super(key: key);
@@ -104,7 +105,12 @@ class _GuideChatPageState extends State<GuideChatPage> {
             // Alerts Card
             GestureDetector(
               onTap: () {
-                // Handle alerts card tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GuideAlertPage(),
+                  ),
+                );
               },
               child: const Card(
                 color: Colors.white,

@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../Services/chat_service.dart';
+import '../../Services/ChatRepository/chat_service.dart';
 import '../../Widgets/widgets.dart';
-import 'chat_screen.dart';
+import '../UserScreens/user_chat_page.dart';
 
 class GroupInfo extends StatefulWidget {
   final String groupId;
@@ -84,7 +84,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                   getName(widget.adminName),
                                   widget.groupName)
                                   .whenComplete(() {
-                                nextScreenReplace(context, ChatPage());
+                                nextScreenReplace(context, UserChatPage());
                               });
                             },
                             icon: const Icon(

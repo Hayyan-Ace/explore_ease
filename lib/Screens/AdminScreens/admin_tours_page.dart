@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'Create_Tour_Page.dart';
-import 'Edit_Tour_Page.dart';
+import 'create_tour_page.dart';
+import 'edit_tour_page.dart';
 
 class AdminToursPage extends StatefulWidget {
   const AdminToursPage({Key? key}) : super(key: key);
