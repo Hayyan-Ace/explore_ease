@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:travel_ease_fyp/Screens/AdminScreens/admin_main_page.dart';
 import 'package:travel_ease_fyp/Screens/EmailVerification/email_verification.dart';
+import 'package:travel_ease_fyp/Screens/GuideScreens/guide_main_page.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 
 import '../../Models/User/user_model.dart';
@@ -38,21 +39,25 @@ class AuthenticationRepository extends GetxController {
   }
 
 
-  setInitialScreen(User? user) async {
-    if (user != null) {
-      currentuser = await UserRepository().getUserDetails(user.uid);
-
-      if (currentuser?.isAdmin ?? false == true) {
-        Get.offAll(() => AdminPanelMain());
-      } else if (user.emailVerified) {
-        Get.offAll(() => const MainPage());
-      } else {
-        Get.offAll(() => EmailVerificationScreen());
-      }
-    } else {
+  Future<void> setInitialScreen(User? user) async {
+    if (user == null) {
       Get.offAll(() => const WelcomeScreen());
+      return; // Exit early if no user
+    }
+
+    currentuser = await UserRepository().getUserDetails(user.uid);
+
+    if (currentuser!.isAdmin) {
+      Get.offAll(() => const AdminPanelMain());
+    } else if (currentuser!.isGuide) {
+      Get.offAll(() => const GuidePanelMain());
+    } else if (user.emailVerified) {
+      Get.offAll(() => const MainPage());
+    } else {
+      Get.offAll(() => const EmailVerificationScreen());
     }
   }
+
 
   Future<void> createUserInFirestore() async {
     // Create user document in Firestore
@@ -67,7 +72,8 @@ class AuthenticationRepository extends GetxController {
       'cnic': _cnic,
       'phoneNo': _phoneNo,
       'profilePicture': '', // Default or null, update as needed
-      'isAdmin': false, // Default to false, update as needed
+      'isAdmin': false,
+      'isGuide': false,// Default to false, update as needed
     });
   }
 
@@ -109,7 +115,7 @@ class AuthenticationRepository extends GetxController {
       if (checkForInitialStateFunc == 0) {
         checkForInitialStateFunc = 1;
         if (firebaseUser.value != null) {
-          Get.offAll(() => EmailVerificationScreen());
+          Get.offAll(() => const EmailVerificationScreen());
         } else {
           Get.offAll(() => const MainPage());
         }
@@ -141,7 +147,10 @@ class AuthenticationRepository extends GetxController {
           await UserRepository().getUserDetails(_auth.currentUser!.uid);
       if (currentuser?.isAdmin == true) {
         Get.offAll(() => const AdminPanelMain());
-      } else {
+      } else if (currentuser!.isGuide) {
+        Get.offAll(() => const GuidePanelMain());
+      }
+      else {
         Get.offAll(() => const MainPage());
       }
 
@@ -164,7 +173,7 @@ class AuthenticationRepository extends GetxController {
 
   Future<void> logOut() async {
     await _auth.signOut();
-    Get.offAll(() => LoginScreen());
+    Get.offAll(() => const LoginScreen());
   }
 
   Future<void> sendVerificationEmail() async {

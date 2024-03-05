@@ -179,7 +179,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
     }
 
     // Update the assignedTour field in the users collection for the tour guide
-    await _userCollection.doc(tourGuideUid).update({"assignedTour": tourName});
+    await _userCollection.doc(tourGuideUid).update({"assignedTour": tourId});
 
     // Update the tour document with the tour guide UID
     await collection.doc(tourId).update({

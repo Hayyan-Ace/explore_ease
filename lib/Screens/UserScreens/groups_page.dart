@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Screens/UserScreens/search_page.dart';
 
-import '../../Services/database_service.dart';
+import '../../Services/chat_service.dart';
 import '../../Widgets/group_title.dart';
 import '../../Widgets/widgets.dart';
 

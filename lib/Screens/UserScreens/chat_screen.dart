@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../Services/database_service.dart';
+import '../../Services/chat_service.dart';
 import 'chat_page.dart';
 
 class ChatPage extends StatefulWidget {
@@ -107,11 +107,11 @@ class _ChatPageState extends State<ChatPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Payment Pending"),
-            content: Text("The payment for this tour is pending confirmation."),
+            title: const Text("Payment Pending"),
+            content: const Text("The payment for this tour is pending confirmation."),
             actions: <Widget>[
               TextButton(
-                child: Text("OK"),
+                child: const Text("OK"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -142,7 +142,7 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               color: Colors.grey.shade200,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,7 +178,7 @@ class _ChatPageState extends State<ChatPage> {
                 elevation: 3,
                 child: Opacity(
                   opacity: currentTourVerified ? 1.0 : 0.5, // Reduce opacity if disabled
-                  child: ListTile(
+                  child: const ListTile(
                     contentPadding: EdgeInsets.all(16),
                     leading: Icon(Icons.chat),
                     title: Text('Chat'),
@@ -240,4 +240,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
 }
+
+

@@ -7,6 +7,7 @@ class MyAppUser {
   final String fullName;
   final String phoneNo;
   final String cnic;
+  final bool isGuide;
   MyAppUser({
     required this.fullName,
     required this.phoneNo,
@@ -16,6 +17,7 @@ class MyAppUser {
     required this.username,
     required this.profilePicture,
     required this.isAdmin,
+    required this.isGuide,
   });
 
 
@@ -28,7 +30,8 @@ class MyAppUser {
       isAdmin: map['isAdmin'] ?? false,
       fullName: map['fullName'] ?? '',
       phoneNo: map['phoneNo'] ?? '',
-      cnic: map['cnic'] ?? ''
+      cnic: map['cnic'] ?? '',
+      isGuide: map['isGuide'] ?? false,
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../Services/database_service.dart';
+import '../../Services/chat_service.dart';
 import '../../Widgets/widgets.dart';
 import 'chat_page.dart';
 
