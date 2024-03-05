@@ -36,18 +36,25 @@ class AlertService {
   }
 
   void getToken() async {
-    await FirebaseMessaging.instance.getToken().then(
-            (token) {
-          mtoken = token;
-          print("My token is $mtoken");
-          saveToken(token!);
-        }
-    );
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        mtoken = token;
+        print("My token is $mtoken");
+        saveToken(token);
+      } else {
+        print("Failed to get token");
+      }
+    } catch (e) {
+      print("Error getting token: $e");
+    }
   }
 
+
   void saveToken(String token) async {
-    await FirebaseFirestore.instance.collection("token").doc("userid").set(
+    await FirebaseFirestore.instance.collection("token").doc(token).set(
       {'token': token},
+      SetOptions(merge: true),
     );
   }
 
