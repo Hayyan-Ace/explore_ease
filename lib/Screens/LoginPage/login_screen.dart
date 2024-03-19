@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '../../Services/AuthentactionRepository/authentication_repository.dart';
+import '../../Services/ChatRepository/alert_service.dart';
 import '../SignUpPage/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,11 +16,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool rememberUser = false;
+  bool isPasswordVisible = false;
+  final AlertService _alertService = AlertService(); // Instance of AlertService
 
   @override
   Widget build(BuildContext context) {
-    myColor = Color(0xFFa2d19f);
+    myColor = const Color(0xFFa2d19f);
     mediaSize = MediaQuery.of(context).size;
+
     return Container(
       decoration: BoxDecoration(
         color: myColor,
@@ -33,10 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Stack(children: [
-          Positioned(top: 20, child: _buildTop()),
-          Positioned(bottom: 0, child: _buildBottom()),
-        ]),
+        body: Stack(
+          children: [
+            Positioned(top: 20, child: _buildTop()),
+            Positioned(bottom: 0, child: _buildBottom()),
+          ],
+        ),
       ),
     );
   }
@@ -58,16 +63,16 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   Widget _buildBottom() {
     return SizedBox(
       width: mediaSize.width,
       child: Card(
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            )),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: _buildForm(),
@@ -83,7 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
         const Text(
           "Welcome",
           style: TextStyle(
-              color: Colors.black87, fontSize: 32, fontWeight: FontWeight.w500),
+              color: Colors.black87,
+              fontSize: 32,
+              fontWeight: FontWeight.w500),
         ),
         _buildGreyText("Please login with your information"),
         const SizedBox(height: 60),
@@ -113,19 +120,31 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : Icon(Icons.done),
+        suffixIcon: isPassword
+            ? IconButton(
+          icon: Icon(
+            isPasswordVisible
+                ? Icons.visibility
+                : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              isPasswordVisible = !isPasswordVisible;
+            });
+          },
+        )
+            : const SizedBox.shrink(),
       ),
-      obscureText: isPassword,
+      obscureText: isPassword && !isPasswordVisible,
     );
   }
 
   Widget _buildRememberForgot() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end, // Align to the end of the row
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
           onPressed: () {
-            // Handle the "Don't have an account? Sign up here" action
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SignUpScreen()),
@@ -134,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextButton.styleFrom(
             foregroundColor: Colors.black87,
           ),
-          child: Text("Don't have an account? Sign up here"),
+          child: const Text("Don't have an account? Sign up here"),
         ),
       ],
     );
@@ -144,6 +163,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return ElevatedButton(
       onPressed: () async {
         try {
+          // Request permission and get token upon login
+          _alertService.requestPermission();
+          _alertService.getToken();
+
+          // Proceed with login
           await AuthenticationRepository.instance.loginWithEmailAndPassword(
             _emailController.text.trim(),
             _passwordController.text.trim(),
@@ -160,15 +184,10 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: myColor.withOpacity(0.9),
         minimumSize: const Size.fromHeight(60),
       ),
-      child: Text(
+      child: const Text(
         'Login',
         style: TextStyle(color: Colors.black87),
       ),
     );
   }
-
-
-
-
-
 }

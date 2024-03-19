@@ -72,7 +72,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
                     ),
-                    child: Text('Done'),
+                        child: Text('Done'),
                   )
                       : ElevatedButton(
                     onPressed: () {

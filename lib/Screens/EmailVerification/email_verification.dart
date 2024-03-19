@@ -18,8 +18,20 @@ class EmailVerificationScreen extends StatelessWidget {
         return false;
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Email Verification'),
+          title: const Text(
+            'Email Verification',
+            style: TextStyle(
+              color: Colors.black87,
+              letterSpacing: 1.5,
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+          ),
+          centerTitle: false,
+          backgroundColor: Colors.white,
+          elevation: 0,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -29,7 +41,7 @@ class EmailVerificationScreen extends StatelessWidget {
               const Icon(
                 Icons.email,
                 size: 80,
-                color: Colors.blue,
+                color: Color(0xFFa2d19f),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -47,9 +59,19 @@ class EmailVerificationScreen extends StatelessWidget {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {
-                  await AuthenticationRepository.instance.sendVerificationEmail();
+                  await AuthenticationRepository.instance
+                      .sendVerificationEmail();
                 },
-                child: const Text('Resend Verification Email'),
+                style: ElevatedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  elevation: 10,
+                  shadowColor: Color(0xFFa2d19f),
+                  backgroundColor: Color(0xFFa2d19f).withOpacity(0.9),
+                ),
+                child: const Text(
+                  'Resend Verification Email',
+                  style: TextStyle(color: Colors.black87),
+                ),
               ),
             ],
           ),

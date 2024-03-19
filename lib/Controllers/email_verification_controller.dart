@@ -34,10 +34,11 @@ class EmailVerificationController extends GetxController {
       final user = FirebaseAuth.instance.currentUser;
       if(user!.emailVerified){
         timer.cancel();
-        // await AuthenticationRepository.instance.createUserInFirestore();        Fluttertoast.showToast(
-        //   msg: "Email Verified! Logging In.",
-        //   toastLength: Toast.LENGTH_LONG,
-        //   gravity: ToastGravity.TOP,);
+        await AuthenticationRepository.instance.createUserInFirestore();
+        Fluttertoast.showToast(
+           msg: "Email Verified! Logging In.",
+           toastLength: Toast.LENGTH_LONG,
+           gravity: ToastGravity.TOP,);
         AuthenticationRepository.instance.setInitialScreen(user);
       }
 

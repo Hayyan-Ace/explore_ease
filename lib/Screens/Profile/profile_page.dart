@@ -6,6 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
+import 'package:travel_ease_fyp/Screens/Profile/profile_controller.dart';
+
+import 'profile_field.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -20,10 +24,16 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _phoneNoController = TextEditingController();
   final TextEditingController _cnicController = TextEditingController();
 
-  String _profileImageUrl =
-      'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+  late  String _profileImageUrl ;
+
   @override
   Widget build(BuildContext context) {
+
+    final profileController = Provider.of<ProfileController>(context);
+
+    _profileImageUrl = profileController.profileImageUrl;
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -61,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _emailController.text = userData['email'] ?? '';
               _phoneNoController.text = userData['phoneNo'] ?? '';
               _cnicController.text = userData['cnic'] ?? '';
+              _profileImageUrl = userData['profilePicture'];
 
               return SingleChildScrollView(
                 child: Column(
@@ -71,10 +82,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         // Show a pop-up menu with options
                         final result = await showMenu(
                           context: context,
-                          position: const RelativeRect.fromLTRB(100, 200, 50, 0),
+                          position:
+                          const RelativeRect.fromLTRB(100, 200, 50, 0),
                           items: const [
                             PopupMenuItem(
-                              child: Text('Update'),
+                              child: Text('Upload'),
                               value: 'change',
                             ),
                             PopupMenuItem(
@@ -88,30 +100,36 @@ class _ProfilePageState extends State<ProfilePage> {
                         if (result != null) {
                           if (result == 'change') {
                             // Open the gallery to select an image
-                            File? imageFile = await _pickImage(ImageSource.gallery);
+                            File? imageFile =
+                            await _pickImage(ImageSource.gallery);
                             if (imageFile != null) {
                               // Upload the selected image to Firebase
                               String imageUrl = await _uploadImage(
                                   _auth.currentUser!.uid, imageFile);
                               setState(() {
-                                _profileImageUrl = imageUrl;  // Use 'imageUrl' here
+                                _profileImageUrl = imageUrl; // Use 'imageUrl' here
                               });
                             }
                           } else if (result == 'remove') {
                             // Set the current image as the profile picture
                             // (You can implement the logic to remove the image from Firebase if needed)
+                            _profileImageUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
                           }
                         }
+
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: CircleAvatar(
                           radius: 80,
-                          backgroundImage: NetworkImage(_profileImageUrl),
+                          backgroundImage: NetworkImage(
+                            _profileImageUrl.isEmpty
+                                ? 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'
+                                : _profileImageUrl,
+                          ),
                         ),
                       ),
                     ),
-
                     ProfileField(
                       label: 'Full Name',
                       value: _fullNameController.text,
@@ -163,6 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             'email': email,
                             'phoneNo': phoneNo,
                             'cnic': cnic,
+                            'profilePicture' : _profileImageUrl
                           });
 
                           Fluttertoast.showToast(
@@ -214,7 +233,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
   Future<String> _uploadImage(String userId, File imageFile) async {
     // Upload the image to Firebase Storage and return the download URL
     Reference storageReference = FirebaseStorage.instance
@@ -234,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .update({'profilePicture': downloadURL});  // Use 'profilePicture' here
+          .update({'profilePicture': downloadURL}); 
 
       return downloadURL;
     } catch (error) {
@@ -242,45 +260,6 @@ class _ProfilePageState extends State<ProfilePage> {
       return ''; // Handle the error as needed
     }
   }
-
-
 }
 
-class ProfileField extends StatelessWidget {
-  final String label;
-  final String value;
-  final TextEditingController? controller;
-  final bool readOnly; // Add this property
 
-  ProfileField({
-    super.key,
-    required this.label,
-    required this.value,
-    this.controller,
-    this.readOnly = false, // Set a default value
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: TextField(
-                controller: controller,
-                readOnly: readOnly, // Set readOnly property
-                decoration: InputDecoration(
-                  labelText: label,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

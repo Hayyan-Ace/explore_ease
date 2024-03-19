@@ -16,11 +16,11 @@ class _CreateTourPageState extends State<CreateTourPage> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
 
-
   // Controllers for each form field
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _startingPointController = TextEditingController();
+  final TextEditingController _startingPointController =
+      TextEditingController();
   final TextEditingController _endPointController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _durationController = TextEditingController();
@@ -50,8 +50,30 @@ class _CreateTourPageState extends State<CreateTourPage> {
     final String price = _priceController.text;
     final String duration = _durationController.text;
 
+    // Check if any field is empty
+    if (name.isEmpty ||
+        description.isEmpty ||
+        startingPoint.isEmpty ||
+        endPoint.isEmpty ||
+        price.isEmpty ||
+        duration.isEmpty ||
+        _selectedDate == null ||
+        _image == null) {
+      // Show a toast indicating that all fields must be filled
+      Fluttertoast.showToast(
+          msg: 'Please fill in all fields and select a date and image.',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return;
+    }
+
     // Omitting the tourId field so Firestore will auto-generate a document ID
-    DocumentReference tourDocumentReference = await FirebaseFirestore.instance.collection('Tour').add({
+    DocumentReference tourDocumentReference =
+    await FirebaseFirestore.instance.collection('Tour').add({
       'tourName': name,
       'description': description,
       'startingPoint': startingPoint,
@@ -75,9 +97,29 @@ class _CreateTourPageState extends State<CreateTourPage> {
     }).then((_) {
       // Image URL and tourId updated successfully
       print('Image URL and tourId updated in Firestore');
+
+      // Show a toast indicating successful tour creation
+      Fluttertoast.showToast(
+          msg: 'Tour created successfully!',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }).catchError((error) {
       // Handle errors during the image URL and tourId update
       print('Error updating image URL and tourId in Firestore: $error');
+
+      // Show a toast indicating an error
+      Fluttertoast.showToast(
+          msg: 'Error creating the tour. Please try again.',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     });
 
     // Successfully added tour to Firebase
@@ -86,9 +128,6 @@ class _CreateTourPageState extends State<CreateTourPage> {
     //navigate back to the previous screen or perform other actions.
     Navigator.pop(context);
   }
-
-
-
 
   Future<String> uploadImageToFirebaseStorage() async {
     if (_image == null) {
@@ -100,7 +139,10 @@ class _CreateTourPageState extends State<CreateTourPage> {
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
 
     // Reference to the Firebase Storage bucket with a dynamic file name
-    var storageReference = firebase_storage.FirebaseStorage.instance.ref().child('tour_images').child('$fileName.jpg');
+    var storageReference = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('tour_images')
+        .child('$fileName.jpg');
 
     // Upload the file to Firebase Storage
     await storageReference.putFile(_image!);
@@ -113,8 +155,18 @@ class _CreateTourPageState extends State<CreateTourPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Create Tour'),
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Create Tour',
+          style: TextStyle(
+            color: Colors.black,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -122,52 +174,60 @@ class _CreateTourPageState extends State<CreateTourPage> {
           key: _formKey,
           child: ListView(
             children: [
-              _buildTextField(_nameController, 'Name'),
+              _buildEditableField('Name', _nameController, TextInputType.text),
               // Remove the Tour ID field from the form
               // _buildTextField(_tourIdController, 'Tour ID'),
-              _buildTextField(_descriptionController, 'Description'),
-              _buildTextField(_startingPointController, 'Starting Point'),
-              _buildTextField(_endPointController, 'End Point'),
-              _buildTextField(_priceController, 'Price'),
-              _buildTextField(_durationController, 'Duration'),
+              _buildEditableField('Starting Point', _startingPointController,
+                  TextInputType.text),
+              _buildEditableField(
+                  'End Point', _endPointController, TextInputType.text),
+              _buildEditableField(
+                  'Price', _priceController, TextInputType.number),
+              _buildEditableField(
+                  'Duration', _durationController, TextInputType.number),
+              _buildEditableDescriptionField('Description', _descriptionController),
               const SizedBox(height: 16),
               GestureDetector(
                 onTap: getImage,
                 child: _image == null
                     ? Container(
-                  width: 150,
-                  height: 150,
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.add_a_photo, size: 50),
-                )
-                    : Image.file(_image!, width: 150, height: 150, fit: BoxFit.cover),
+                        width: 150,
+                        height: 150,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.add_a_photo, size: 50),
+                      )
+                    : Image.file(_image!,
+                        width: 150, height: 150, fit: BoxFit.cover),
               ),
               const SizedBox(height: 16),
               GestureDetector(
                 onTap: () => _selectDate(context), // Show date picker
                 child: _selectedDate == null
                     ? Container(
-                  width: 20,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFa2d19f),
-                    borderRadius: BorderRadius.circular(100.0), // Set border radius
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text('Select Date'),
-                )
+                        width: 20,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFa2d19f),
+                          borderRadius:
+                              BorderRadius.circular(100.0), // Set border radius
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text('Select Date'),
+                      )
                     : Container(
-                  width: 20,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFa2d19f),
-                    borderRadius: BorderRadius.circular(100.0), // Set border radius
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${_selectedDate!.toLocal()}'.split(' ')[0], // Display selected date
-                  ),
-                ),
+                        width: 20,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFa2d19f),
+                          borderRadius:
+                              BorderRadius.circular(100.0), // Set border radius
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${_selectedDate!.toLocal()}'
+                              .split(' ')[0], // Display selected date
+                        ),
+                      ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -181,7 +241,10 @@ class _CreateTourPageState extends State<CreateTourPage> {
                     _createTour();
                   }
                 },
-                child: const Text('Create Tour',style: TextStyle(color: Colors.black87),),
+                child: const Text(
+                  'Create Tour',
+                  style: TextStyle(color: Colors.black87),
+                ),
               ),
             ],
           ),
@@ -190,19 +253,41 @@ class _CreateTourPageState extends State<CreateTourPage> {
     );
   }
 
-
-Widget _buildTextField(TextEditingController controller, String label) {
+  Widget _buildEditableDescriptionField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(labelText: label),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter $label';
-          }
-          return null;
-        },
+        maxLines: 10,
+        textInputAction: TextInputAction.newline, // Enable new-line action
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditableField(
+    String label,
+    TextEditingController controller,
+    TextInputType keyboardType,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          focusedBorder: const OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Color(0xFFa2d19f)), // Set the focused border color
+          ),
+          labelStyle: const TextStyle(
+              color: Colors.black87), // Set the label (hint) color
+        ),
       ),
     );
   }
@@ -219,12 +304,15 @@ Widget _buildTextField(TextEditingController controller, String label) {
             primaryColor: const Color(0xFFa2d19f), // header background color
             hintColor: const Color(0xFFa2d19f), // color of selected day
             colorScheme: const ColorScheme.light(primary: Color(0xFFa2d19f)),
-            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
       },
     );
+
+
 
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
@@ -232,6 +320,5 @@ Widget _buildTextField(TextEditingController controller, String label) {
       });
     }
   }
-
 
 }

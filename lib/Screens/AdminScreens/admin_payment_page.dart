@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../Services/ChatRepository/chat_service.dart';
+
 class AdminPaymentPage extends StatefulWidget {
   const AdminPaymentPage({Key? key}) : super(key: key);
+
 
   @override
   State<AdminPaymentPage> createState() => _AdminPaymentPageState();
@@ -13,6 +16,10 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   late List<Map<String, dynamic>> items = [];
   bool isLoaded = false;
   bool showVerifiedPayments = true;
+
+  late String groupId; // Define groupId
+  late String userName; // Define userName
+  late String groupName; // Define groupName
 
   @override
   void initState() {
@@ -43,49 +50,64 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text('Receipt Image'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(receiptImageUrl),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFa2d19f),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.network(receiptImageUrl),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFa2d19f),
+                  ),
+                  onPressed: () async {
+                    await approvePayment(userUid, bookingIndex);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Verify Payment', style: TextStyle(color: Colors.black)),
                 ),
-                onPressed: () async {
-                  await approvePayment(userUid, bookingIndex);
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Verify Payment', style: TextStyle(color: Colors.black)),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await disapprovePayment(userUid, bookingIndex);
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                ElevatedButton(
+                  onPressed: () async {
+                    await disapprovePayment(userUid, bookingIndex);
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  child: const Text('Disapprove Payment', style: TextStyle(color: Colors.black)),
                 ),
-                child: const Text('Disapprove Payment', style: TextStyle(color: Colors.black)),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+
   Future<void> approvePayment(String uid, int bookingIndex) async {
     var userReference = FirebaseFirestore.instance.collection('users').doc(uid);
+    var groupReference = FirebaseFirestore.instance.collection('groups');
 
     var currentBookings = (await userReference.get()).data()?['bookings'] as List<dynamic>?;
-
     if (currentBookings != null) {
       currentBookings[bookingIndex]['verified'] = true;
 
       await userReference.update({'bookings': currentBookings});
+
+      // After verifying the payment, add the user to the respective tour group
+      String tourName = currentBookings[bookingIndex]['tourName'];
+      String userName = (await userReference.get()).data()?['username'];
+
+      var querySnapshot = await groupReference.where('groupName', isEqualTo: 'Tour_$tourName').get();
+      if (querySnapshot.docs.isNotEmpty) {
+        String groupId = querySnapshot.docs.first.id; // assuming the first document holds the desired group
+        await addGroupMember('Tour_$tourName', uid, userName, groupId);
+      } else {
+        print('Group not found for tour: $tourName');
+      }
     }
   }
 
@@ -97,9 +119,11 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     if (currentBookings != null) {
       currentBookings.removeAt(bookingIndex);
 
+      // Update the 'bookings' field with the modified list
       await userReference.update({'bookings': currentBookings});
     }
   }
+
 
   int countUnverifiedPayments() {
     int count = 0;
@@ -129,6 +153,22 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
           .toList();
     }
   }
+
+  Future<void> addGroupMember(String groupName, String uid, String userName, String groupId) async {
+    DocumentReference groupDocRef = FirebaseFirestore.instance.collection('groups').doc(groupId);
+
+    // Update the group document to add the user as a member
+    await groupDocRef.update({
+      "members": FieldValue.arrayUnion(["$uid+$userName"]),
+    });
+
+    // Update the user's document to add the group
+    DocumentReference userDocRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    await userDocRef.update({
+      "groups": FieldValue.arrayUnion(["$groupId+$groupName"]),
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
