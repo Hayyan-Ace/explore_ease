@@ -9,7 +9,7 @@ import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
 
 import '../../Models/User/user_model.dart';
 import '../../Screens/UserScreens/user_main_page.dart';
-import '../../Screens/IntronScreens/welcome.dart';
+import '../../Screens/IntroScreens/welcome.dart';
 import '../UserRepository/user_repository.dart';
 
 class AuthenticationRepository extends GetxController {
