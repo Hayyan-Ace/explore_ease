@@ -48,8 +48,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       _controller.jumpToPage(2);
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF172614),
-                      onPrimary: Color(0xFFa2d19f),
+                      foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
                     ),
                     child: Text('Skip'),
                   ),
@@ -71,8 +70,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF172614),
-                      onPrimary: Color(0xFFa2d19f),
+                      foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
                     ),
                     child: Text('Done'),
                   )
@@ -84,8 +82,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF172614),
-                      onPrimary: Color(0xFFa2d19f),
+                      foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
                     ),
                     child: Text('Next'),
                   ),
