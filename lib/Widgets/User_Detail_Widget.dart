@@ -10,8 +10,8 @@ class UserDetailWidget extends StatelessWidget {
     required this.userData,
     required this.onDeletePressed,
     required this.onSetAsGuidePressed,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class UserDetailWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(
+          const Text(
             'User Details',
             style: TextStyle(
               fontSize: 20,
@@ -119,7 +119,7 @@ class UserDetailWidget extends StatelessWidget {
         children: [
           Text(
             '$label:',
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
