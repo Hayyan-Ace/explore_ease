@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class AlertService {
   String? mtoken = " ";
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
 
   AlertService() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -50,21 +53,39 @@ class AlertService {
     }
   }
 
-
   void saveToken(String token) async {
-    await FirebaseFirestore.instance.collection("token").doc(token).set(
-      {'token': token},
-      SetOptions(merge: true),
-    );
+    try {
+      // Retrieve the current user's ID
+      String? userId = await getCurrentUserId();
+
+      if (userId != null) {
+        // Reference to the current user's document in Firestore
+        DocumentReference userDocRef =
+        FirebaseFirestore.instance.collection("users").doc(userId);
+
+        // Update the token in the current user's document
+        await userDocRef.set(
+          {'token': token},
+          SetOptions(merge: true), // Merge with existing data if any
+        );
+
+        print('Token saved successfully for user: $userId');
+      } else {
+        print('Failed to save token: User not authenticated.');
+      }
+    } catch (e) {
+      print("Error saving token: $e");
+    }
   }
+
 
   void sendPushMessage(String token, String body, String title) async {
     try {
-      await http.post(
+      http.Response response = await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'AAAAPmjwZ20:APA91bFBKPVycQDt7JsHpn6DKe1co3f5aC4IUMQfW3ZWV08IepPz_U5ffHZs0oWY69b-2uc8N56EiDGehhc-tWKZsb4RaJQr0LVpeDByXY7iu5lmznZ4hZObVMTEdyWjOK4Dx-jzzhaU'
+          'Authorization': 'key=AAAAPmjwZ20:APA91bENs_L0NlUiQ8FoFt-d7re_6t-kWKPiZZy-KNJFCuZTB6U0cwQqGlCh0fNfnogFrqfb36Ubz1MGQ37Di2vNuzz_vxZ6HiLDoOjxaQRX_DRQsXxL7Y8uVwqsZn62BBe5bXFoxLx9', // Update with your server key
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -78,12 +99,27 @@ class AlertService {
             "notification": <String, dynamic>{
               "title": title,
               "body": body,
-            }
+            },
+            "to": token, // Add the recipient token
           },
         ),
       );
+
+      print("FCM Server Response: ${response.body}");
     } catch (e) {
       print("Error sending push message: $e");
     }
   }
+
+  // Modify getCurrentUser() to return the current user's ID
+  Future<String?> getCurrentUserId() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    }
+    return null;
+  }
+
+
+
 }

@@ -6,7 +6,7 @@ import 'package:travel_ease_fyp/Screens/AdminScreens/admin_main_page.dart';
 import 'package:travel_ease_fyp/Screens/EmailVerification/email_verification.dart';
 import 'package:travel_ease_fyp/Screens/GuideScreens/guide_main_page.dart';
 import 'package:travel_ease_fyp/Screens/LoginPage/login_screen.dart';
-
+import '../../Services/ChatRepository/alert_service.dart';
 import '../../Models/User/user_model.dart';
 import '../../Screens/UserScreens/user_main_page.dart';
 import '../../Screens/IntroScreens/welcome.dart';
@@ -18,6 +18,7 @@ class AuthenticationRepository extends GetxController {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AlertService _alertService = AlertService(); // Instance of AlertService
   late final Rx<User?> firebaseUser;
   int checkForInitialStateFunc = 0;
   late String _email;

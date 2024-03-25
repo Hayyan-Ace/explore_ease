@@ -163,18 +163,26 @@ class _LoginScreenState extends State<LoginScreen> {
     return ElevatedButton(
       onPressed: () async {
         try {
-          // Request permission and get token upon login
-          _alertService.requestPermission();
-          _alertService.getToken();
-
           // Proceed with login
           await AuthenticationRepository.instance.loginWithEmailAndPassword(
             _emailController.text.trim(),
             _passwordController.text.trim(),
           );
+
+          // Request permission and get token upon successful login
+          _alertService.requestPermission();
+          _alertService.getToken();
+
         } catch (e) {
           // Handle login errors here (e.g., display an error message)
           print("Error during login: $e");
+          // Show a snackbar or dialog to inform the user about the error
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error during login: $e'),
+              duration: Duration(seconds: 3),
+            ),
+          );
         }
       },
       style: ElevatedButton.styleFrom(
@@ -190,4 +198,5 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 }

@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import '../../Services/ChatRepository/alert_service.dart';
+import '../../Services/ChatRepository/chat_service.dart';
 
 class GuideAlertPage extends StatefulWidget {
   @override
@@ -7,16 +11,47 @@ class GuideAlertPage extends StatefulWidget {
 
 class _GuideAlertPageState extends State<GuideAlertPage> {
   final TextEditingController _messageController = TextEditingController();
+  final DatabaseService _databaseService = DatabaseService(); // Instance of DatabaseService
+  final AlertService _alertService = AlertService(); // Instance of AlertService
 
-  void _sendMessage() {
-    // Implement logic to send notification
+
+  void _sendMessage() async {
     String message = _messageController.text;
-    // Send message to Firebase Cloud Messaging (FCM) for notification delivery
-    // You may need to use FCM API or a similar service to send notifications
-    // Example:
-    // firebaseMessaging.send(message);
-    // You need to replace `firebaseMessaging.send(message)` with your actual implementation
+    String yourGroupId = "zvzG4f8Duhga5y206BDD";
+
+    try {
+      DocumentSnapshot groupSnapshot =
+      await _databaseService.groupCollection.doc(yourGroupId).get();
+      Map<String, dynamic>? groupData =
+      groupSnapshot.data() as Map<String, dynamic>?;
+
+      if (groupData != null && groupData.containsKey('members')) {
+        List<dynamic> members = groupData['members'];
+
+        for (String memberData in members) {
+          String memberId = memberData.split('_')[0];
+          String userName = memberData.split('_')[1];
+
+          DocumentSnapshot userSnapshot =
+          await _databaseService.userCollection.doc(memberId).get();
+
+          if (userSnapshot.exists) {
+            Map<String, dynamic>? userData =
+            userSnapshot.data() as Map<String, dynamic>?;
+            if (userData != null && userData.containsKey('token')) {
+              String? token = userData['token'];
+              if (token != null) {
+                _alertService.sendPushMessage(token, message, 'Alert');
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error sending message: $e');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
