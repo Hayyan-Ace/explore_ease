@@ -189,7 +189,7 @@ class _PhotosPageState extends State<PhotosPage> {
         if (bookings.isNotEmpty) {
           Map<String, dynamic> firstBooking = bookings[0];
           if (firstBooking.containsKey('tourUid')) {
-            tourUid = firstBooking['tourUid'];
+             tourUid = firstBooking['tourUid'];
 
             // Now you have the tourUid, proceed with image upload using tourUid
             final picker = ImagePicker();

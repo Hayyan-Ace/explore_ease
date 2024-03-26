@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:travel_ease_fyp/PhotosScreen/photo_page.dart';
 import '../ChatScreens/chat_page.dart';
 import 'guide_alerts_page.dart';
 
@@ -89,8 +89,13 @@ class _GuideChatPageState extends State<GuideChatPage> {
             // Photos Card
             GestureDetector(
               onTap: () {
-                // Handle photos card tap
-              },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PhotosPage(),
+                  ),
+                );
+               },
               child: const Card(
                 color: Colors.white,
                 elevation: 3,
@@ -108,7 +113,7 @@ class _GuideChatPageState extends State<GuideChatPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GuideAlertPage(),
+                    builder: (context) => GuideAlertPage(tourName: currentTourName,),
                   ),
                 );
               },
