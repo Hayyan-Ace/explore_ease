@@ -4,13 +4,13 @@ import '../../Models/User/user_model.dart';
 
 class UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  late Map<String, dynamic> userData;
   Future<MyAppUser?> getUserDetails(String uid) async {
     try {
       DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
       if (userDoc.exists) {
         // Map Firestore data to your MyAppUser model
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+         userData = userDoc.data() as Map<String, dynamic>;
         return MyAppUser.fromMap(userData);
       }
       return null;
@@ -20,4 +20,5 @@ class UserRepository {
       return null;
     }
   }
+
 }
