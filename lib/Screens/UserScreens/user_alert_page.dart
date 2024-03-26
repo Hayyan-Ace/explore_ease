@@ -72,7 +72,7 @@ class _UserAlertsPageState extends State<UserAlertsPage> {
                 DateTime dateTime = timestamp.toDate();
 
                 // Alternate background color based on index
-                Color cardColor = index % 2 == 0 ? Colors.white : const Color(0xFFa2d19f);
+                Color cardColor = index % 2 == 0 ? const Color(0xFFa2d19f) :Colors.white;
 
                 return Card(
                   elevation: 4.0,
