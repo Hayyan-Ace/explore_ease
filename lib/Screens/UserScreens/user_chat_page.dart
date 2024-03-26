@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:travel_ease_fyp/Screens/UserScreens/user_alert_page.dart';
+import 'package:travel_ease_fyp/Screens/UserScreens/user_tracking_page.dart';
 import '../../PhotosScreen/photo_page.dart';
 import '../../Services/ChatRepository/chat_service.dart';
 import '../ChatScreens/chat_page.dart';
@@ -212,8 +214,12 @@ class _UserChatPageState extends State<UserChatPage> {
             // Alerts Card
             GestureDetector(
               onTap: () {
-                // Handle alerts card tap
-              },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserAlertsPage(),
+                  ),
+                );              },
               child: const Card(
                 color: Colors.white,
                 elevation: 3,
@@ -228,8 +234,13 @@ class _UserChatPageState extends State<UserChatPage> {
             // Tour Tracking Card
             GestureDetector(
               onTap: () {
-                // Handle tour tracking card tap
-              },
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => TourTrackingPage(),
+                //   ),
+                // );
+               },
               child: const Card(
                 color: Colors.white,
                 elevation: 3,

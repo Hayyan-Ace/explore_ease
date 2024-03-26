@@ -1,15 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class PhotosPage extends StatefulWidget {
   @override
@@ -20,8 +15,6 @@ class _PhotosPageState extends State<PhotosPage> {
   late List<String> userImages = [];
   StreamSubscription? _userImagesSubscription;
   bool _isLoading = true;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  late String tourUid;
 
   Future<void> _refreshData() async {
     setState(() {
@@ -89,14 +82,11 @@ class _PhotosPageState extends State<PhotosPage> {
         title: const Text('Photos'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.update),
-            onPressed: _uploadImages, // Call function to upload images
-            tooltip: 'Update Images',
-          ),
-          IconButton(
             icon: const Icon(Icons.upload_outlined),
-            onPressed: _uploadImages, // Call function to upload images
-            tooltip: 'Upload Images',
+            onPressed: () {
+              // Handle sharing images
+            },
+            tooltip: 'Share Images',
           ),
           IconButton(
             icon: const Icon(Icons.download_outlined),
@@ -151,79 +141,6 @@ class _PhotosPageState extends State<PhotosPage> {
       ),
     );
   }
-
-  Future<List<String>> sendFaceRecognitionRequest() async {
-    String userID = _auth.currentUser!.uid;
-
-    final url = Uri.parse('http://your_local_ip:5000/face_recognition');
-    final body = jsonEncode({'userID': userID, 'tourID': tourUid});
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: body,
-    );
-
-    if (response.statusCode == 200) {
-      final recognizedImageUrls = List<String>.from(jsonDecode(response.body));
-      return recognizedImageUrls;
-    } else {
-      throw Exception('Failed to perform face recognition');
-    }
-  }
-
-  Future<void> _uploadImages() async {
-    try {
-      // Get user data from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .get();
-
-      // Check if user data exists and contains bookings
-      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-      if (userData != null && userData.containsKey('bookings')) {
-        List<dynamic> bookings = userData['bookings'];
-
-        // Assuming you want to get the tourUid from the first booking (index 0)
-        if (bookings.isNotEmpty) {
-          Map<String, dynamic> firstBooking = bookings[0];
-          if (firstBooking.containsKey('tourUid')) {
-             tourUid = firstBooking['tourUid'];
-
-            // Now you have the tourUid, proceed with image upload using tourUid
-            final picker = ImagePicker();
-            final List<XFile>? images = await picker.pickMultiImage();
-            if (images != null) {
-              firebase_storage.FirebaseStorage storage =
-                  firebase_storage.FirebaseStorage.instance;
-              for (int i = 0; i < images.length; i++) {
-                XFile image = images[i];
-                String imageName = 'image_${image.name}_$i'; // Unique image name
-                firebase_storage.Reference ref = storage
-                    .ref()
-                    .child('tours')
-                    .child(tourUid) // Use the tourUid retrieved from Firestore
-                    .child(imageName);
-                await ref.putFile(File(image.path)); // Upload the file using its path
-              }
-              // Show a success message or update UI as needed
-            }
-          } else {
-            print('tourUid not found in first booking');
-          }
-        } else {
-          print('No bookings found');
-        }
-      } else {
-        print('User data or bookings not found');
-      }
-    } catch (e) {
-      print('Error uploading images: $e');
-      // Handle error, show error message, etc.
-    }
-  }
-
   Future<void> _downloadImages() async {
     // Request storage permission
     final status = await Permission.storage.request();
