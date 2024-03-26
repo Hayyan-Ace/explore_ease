@@ -6,11 +6,12 @@ class MessageTile extends StatefulWidget {
   final bool sentByMe;
 
   const MessageTile(
-      {Key? key,
+      {super.key,
         required this.message,
         required this.sender,
-        required this.sentByMe})
-      : super(key: key);
+        required this.sentByMe}
+
+      );
 
   @override
   State<MessageTile> createState() => _MessageTileState();

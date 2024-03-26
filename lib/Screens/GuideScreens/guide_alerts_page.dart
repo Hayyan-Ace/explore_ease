@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../Services/ChatRepository/alert_service.dart';
 import '../../Services/ChatRepository/chat_service.dart';
+
 class GuideAlertPage extends StatefulWidget {
   final String tourName;
 
@@ -14,15 +15,18 @@ class GuideAlertPage extends StatefulWidget {
 }
 
 class _GuideAlertPageState extends State<GuideAlertPage> {
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
-  final DatabaseService _databaseService = DatabaseService(); // Instance of DatabaseService
-  final AlertService _alertService = AlertService(); // Instance of AlertService
+  final DatabaseService _databaseService = DatabaseService();
+  final AlertService _alertService = AlertService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   get tourName => null;
 
+
   void _sendMessage() async {
     try {
+      String title = _titleController.text; // Title text
       String message = _messageController.text;
 
       // Get the logged-in user ID
@@ -57,11 +61,12 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
                   .doc(yourGroupId)
                   .collection('alerts')
                   .add({
+                'title': title, // Include title in the alert
                 'message': message,
                 'timestamp': FieldValue.serverTimestamp(),
               });
 
-              // Retrieve the group data to get member tokens
+// Retrieve the group data to get member tokens
               DocumentSnapshot groupSnapshot =
               await _databaseService.groupCollection.doc(yourGroupId).get();
               Map<String, dynamic>? groupData =
@@ -88,7 +93,7 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
                       print('Member token: $token');
                       if (token != null) {
                         _alertService.sendPushMessage(
-                            token, message, 'Alert');
+                            token, message, title);
                       }
                     }
                   }
@@ -107,6 +112,7 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
 
 
 
+
   Future<String?> getCurrentUserId() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -115,12 +121,15 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
     return null;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Send Alert Notification'),
+        backgroundColor: Colors.white, // Set app bar background color to white
+        title: const Text(
+          'Send Alert Notification',
+          style: TextStyle(color: Colors.black), // Set app bar title color
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -128,17 +137,42 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
+              controller: _titleController, // Use _titleController
+              decoration: InputDecoration(
+                labelText: 'Title', // Set label for the title
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: const Color(0xFFa2d19f)), // Set focused border color
+                ),
+                hintText: 'Enter title',
+                hintStyle: TextStyle(color: Colors.grey),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            TextField(
               controller: _messageController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Message',
                 border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: const Color(0xFFa2d19f)), // Set focused border color
+                ),
+                hintText: 'Enter message',
+                hintStyle: TextStyle(color: Colors.grey),
               ),
+              cursorColor: const Color(0xFFa2d19f), // Set cursor color
               maxLines: 3,
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _sendMessage,
-              child: const Text('Send Notification'),
+              style: ElevatedButton.styleFrom(
+                primary: const Color(0xFFa2d19f), // Set button color
+              ),
+              child: const Text(
+                'Send Notification',
+                style: TextStyle(color: Colors.black87), // Set text color to white
+              ),
             ),
           ],
         ),
@@ -148,6 +182,7 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
 
   @override
   void dispose() {
+    _titleController.dispose(); // Dispose of title controller
     _messageController.dispose();
     super.dispose();
   }
