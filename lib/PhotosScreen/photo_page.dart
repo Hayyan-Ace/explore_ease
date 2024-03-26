@@ -28,8 +28,8 @@ class _PhotosPageState extends State<PhotosPage> {
 
       List<String> images = [];
       for (var doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
-        if (data != null && data.containsKey('images')) {
+        final data = doc.data(); // Cast data to Map<String, dynamic>
+        if (data.containsKey('images')) {
           List<dynamic> imageUrls = data['images'];
           images.addAll(imageUrls.map((url) => url.toString()));
         }
