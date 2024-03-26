@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travel_ease_fyp/Screens/UserScreens/user_alert_page.dart';
 import 'package:travel_ease_fyp/Screens/UserScreens/user_tracking_page.dart';
@@ -22,8 +21,8 @@ class _UserChatPageState extends State<UserChatPage> {
   late List<Map<String, dynamic>> items = [];
   Stream? groups;
   String currentTourName = ""; // Store the current tour name for app bar
-  bool currentTourVerified =
-      false; // Store the current tour verification status
+  bool currentTourVerified = false; // Store the current tour verification status
+  bool isTourGroupActive = false;
 
   @override
   void initState() {
@@ -50,7 +49,7 @@ class _UserChatPageState extends State<UserChatPage> {
     }
   }
 
-// Inside fetchUserData() method
+  // Inside fetchUserData() method
   fetchUserData() async {
     var userData = await collection.doc(_user.uid).get();
 
@@ -70,6 +69,7 @@ class _UserChatPageState extends State<UserChatPage> {
             setState(() {
               currentTourVerified = verified;
               currentTourName = tourName; // Update the current tour name
+              isTourGroupActive = true;
             });
           }
         }
@@ -77,7 +77,7 @@ class _UserChatPageState extends State<UserChatPage> {
     }
   }
 
-// Inside openChatForTour() method
+  // Inside openChatForTour() method
   void openChatForTour(String tourName, bool verified) async {
     if (verified) {
       // Fetch the tour group's information
@@ -131,68 +131,88 @@ class _UserChatPageState extends State<UserChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        title: Text('Tour Group: $currentTourName',
+        title: Text(
+          'Tour Group: $currentTourName',
           style: const TextStyle(
-          color: Colors.black,
-          letterSpacing: 1.5,
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),), // Update app bar title
+            color: Colors.black,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.grey.shade200,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Payment Status:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
+            if (isTourGroupActive)
+              Container(
+                padding: const EdgeInsets.all(8),
+                color: Colors.grey.shade200,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Payment Status:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    currentTourVerified
-                        ? 'Confirmed ✓'
-                        : 'Pending Confirmation',
-                    style: TextStyle(
-                      color: currentTourVerified ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      currentTourVerified ? 'Confirmed ✓' : 'Pending Confirmation',
+                      style: TextStyle(
+                        color: currentTourVerified ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 20), // Spacer
-            // Chat Card
-            // Chat Card
-            // Chat Card
-            GestureDetector(
-              onTap: currentTourVerified ? () {
-                openChatForTour(currentTourName, currentTourVerified);
-              } : null, // Set onTap to null when payment is not confirmed
-              child: Card(
-                color: Colors.white,
-                elevation: 3,
-                child: Opacity(
-                  opacity: currentTourVerified ? 1.0 : 0.5, // Reduce opacity if disabled
-                  child: const ListTile(
+            if (isTourGroupActive && currentTourVerified)
+              GestureDetector(
+                onTap: () {
+                  openChatForTour(currentTourName, currentTourVerified);
+                },
+                child: Card(
+                  color: Colors.white,
+                  elevation: 3,
+                  child: ListTile(
                     contentPadding: EdgeInsets.all(16),
                     leading: Icon(Icons.chat),
                     title: Text('Chat'),
                   ),
                 ),
+              )
+            else if (!isTourGroupActive)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: Text(
+                    'No Bookings',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              )
+            else // If tour is active but payment is pending
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: Text(
+                    'Payment Pending',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
               ),
-            ),
-
             const SizedBox(height: 20), // Spacer
-            // Photos Card
+// Photos Card
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -200,7 +220,7 @@ class _UserChatPageState extends State<UserChatPage> {
                   MaterialPageRoute(builder: (context) => PhotosPage()),
                 );
               },
-              child: const Card(
+              child: Card(
                 color: Colors.white,
                 elevation: 3,
                 child: ListTile(
@@ -211,7 +231,7 @@ class _UserChatPageState extends State<UserChatPage> {
               ),
             ),
             const SizedBox(height: 20), // Spacer
-            // Alerts Card
+// Alerts Card
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -219,8 +239,9 @@ class _UserChatPageState extends State<UserChatPage> {
                   MaterialPageRoute(
                     builder: (context) => UserAlertsPage(),
                   ),
-                );              },
-              child: const Card(
+                );
+              },
+              child: Card(
                 color: Colors.white,
                 elevation: 3,
                 child: ListTile(
@@ -231,17 +252,17 @@ class _UserChatPageState extends State<UserChatPage> {
               ),
             ),
             const SizedBox(height: 20), // Spacer
-            // Tour Tracking Card
+// Tour Tracking Card
             GestureDetector(
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => TourTrackingPage(),
-                //   ),
-                // );
-               },
-              child: const Card(
+             /* onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserTrackingPage(),
+                  ),
+                );
+              },*/
+              child: Card(
                 color: Colors.white,
                 elevation: 3,
                 child: ListTile(
@@ -250,13 +271,10 @@ class _UserChatPageState extends State<UserChatPage> {
                   title: Text('Track Tour'),
                 ),
               ),
-            ),
+            ),            // ...
           ],
         ),
       ),
     );
   }
-
 }
-
-

@@ -48,8 +48,8 @@ class _UserMainPageState extends State<UserMainPage>{
 
           items: const [
           BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
-          BottomNavigationBarItem(label: 'Tour Group',icon: Icon(Icons.chat)),
-          BottomNavigationBarItem(label: 'Profile',icon: Icon(Icons.person_2)),
+          BottomNavigationBarItem(label: 'Tour Group',icon: Icon(Icons.groups_3)),
+          BottomNavigationBarItem(label: 'Profile',icon: Icon(Icons.person_pin)),
           BottomNavigationBarItem(label: 'Logout',icon: Icon(Icons.logout, color: Colors.red,),),
           ]
       ),
