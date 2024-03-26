@@ -49,75 +49,38 @@ class _GroupInfoState extends State<GroupInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Color(0xFFa2d19f)), // Icon color
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        title: const Text("Group Info"),
+        backgroundColor: Colors.white, // Changed app bar background color
+        title: const Text("Group Info", style: TextStyle(color: Colors.black)), // Adjusted text color
         actions: [
-          IconButton(
-              onPressed: () {
-                showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text("Exit"),
-                        content:
-                        const Text("Are you sure you exit the group? "),
-                        actions: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(
-                              Icons.cancel,
-                              color: Colors.red,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              DatabaseService(
-                                  uid: FirebaseAuth
-                                      .instance.currentUser!.uid)
-                                  .toggleGroupJoin(
-                                  widget.groupId,
-                                  getName(widget.adminName),
-                                  widget.groupName)
-                                  .whenComplete(() {
-                                nextScreenReplace(context, UserChatPage());
-                              });
-                            },
-                            icon: const Icon(
-                              Icons.done,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      );
-                    });
-              },
-              icon: const Icon(Icons.exit_to_app))
+
         ],
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        color: Colors.white, // Changed body color
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Theme.of(context).primaryColor.withOpacity(0.2)),
+                borderRadius: BorderRadius.circular(30),
+                color: const Color(0xFFa2d19f), // Changed container color
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Colors.black87, // Changed avatar color
                     child: Text(
                       widget.groupName.substring(0, 1).toUpperCase(),
                       style: const TextStyle(
-                          fontWeight: FontWeight.w500, color: Colors.white),
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -133,7 +96,10 @@ class _GroupInfoState extends State<GroupInfo> {
                       const SizedBox(
                         height: 5,
                       ),
-                      Text("Admin: ${getName(widget.adminName)}")
+                      Text(
+                        "Admin: ${getName(widget.adminName)}",
+                        style: const TextStyle(color: Colors.black), // Adjusted text color
+                      )
                     ],
                   )
                 ],
@@ -144,6 +110,7 @@ class _GroupInfoState extends State<GroupInfo> {
         ),
       ),
     );
+
   }
 
   memberList() {
@@ -163,7 +130,7 @@ class _GroupInfoState extends State<GroupInfo> {
                     child: ListTile(
                       leading: CircleAvatar(
                         radius: 30,
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: const Color(0xFFa2d19f),
                         child: Text(
                           getName(snapshot.data['members'][index])
                               .substring(0, 1)

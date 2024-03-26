@@ -52,7 +52,8 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: myColor,
+        iconTheme: const IconThemeData(color: Color(0xFFa2d19f)), // Icon color
+        backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
         title: Text(
@@ -77,7 +78,7 @@ class _ChatState extends State<Chat> {
               );
             },
             icon: const Icon(Icons.info),
-            color: Colors.grey[500],
+            color: const Color(0xFFa2d19f),
           )
         ],
       ),
@@ -171,8 +172,8 @@ class SendMessageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[700],
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      color: Colors.grey[500],
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         children: [
           Expanded(
