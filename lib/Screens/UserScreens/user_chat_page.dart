@@ -175,7 +175,7 @@ class _UserChatPageState extends State<UserChatPage> {
                 onTap: () {
                   openChatForTour(currentTourName, currentTourVerified);
                 },
-                child: Card(
+                child: const Card(
                   color: Colors.white,
                   elevation: 3,
                   child: ListTile(
@@ -186,8 +186,8 @@ class _UserChatPageState extends State<UserChatPage> {
                 ),
               )
             else if (!isTourGroupActive)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
                 child: Center(
                   child: Text(
                     'No Bookings',
@@ -199,8 +199,8 @@ class _UserChatPageState extends State<UserChatPage> {
                 ),
               )
             else // If tour is active but payment is pending
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
                 child: Center(
                   child: Text(
                     'Payment Pending',
@@ -220,7 +220,7 @@ class _UserChatPageState extends State<UserChatPage> {
                   MaterialPageRoute(builder: (context) => PhotosPage()),
                 );
               },
-              child: Card(
+              child: const Card(
                 color: Colors.white,
                 elevation: 3,
                 child: ListTile(
@@ -241,7 +241,7 @@ class _UserChatPageState extends State<UserChatPage> {
                   ),
                 );
               },
-              child: Card(
+              child: const Card(
                 color: Colors.white,
                 elevation: 3,
                 child: ListTile(
@@ -262,7 +262,7 @@ class _UserChatPageState extends State<UserChatPage> {
                   ),
                 );
               },*/
-              child: Card(
+              child: const Card(
                 color: Colors.white,
                 elevation: 3,
                 child: ListTile(
