@@ -173,7 +173,7 @@ class _UserChatPageState extends State<UserChatPage> {
     // Pick photos from the device gallery
     List<XFile>? selectedPhotos = await pickPhotos();
 
-    if (selectedPhotos != null && selectedPhotos.length >= 10) {
+    if (selectedPhotos != null && selectedPhotos.length >= 2) {
       // Get a reference to the Firebase Storage location
       var storage = firebase_storage.FirebaseStorage.instance;
       var storageRef = storage.ref().child('training_data/${_user.uid}');
@@ -285,7 +285,7 @@ class _UserChatPageState extends State<UserChatPage> {
                   if (hasUploadedPhotos) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const PhotosPage()),
+                      MaterialPageRoute(builder: (context) => PhotosPage()),
                     );
                   } else {
                     // Prompt user to upload photos first
@@ -345,7 +345,7 @@ class _UserChatPageState extends State<UserChatPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const UserAlertsPage(),
+                      builder: (context) => UserAlertsPage(),
                     ),
                   );
                 },

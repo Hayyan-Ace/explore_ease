@@ -92,7 +92,7 @@ class _GuideChatPageState extends State<GuideChatPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const PhotosPage(),
+                    builder: (context) => PhotosPage(),
                   ),
                 );
                },

@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:travel_ease_fyp/Services/UserRepository/user_repository.dart';
 
 class PhotosPage extends StatefulWidget {
   @override
@@ -22,20 +23,23 @@ class _PhotosPageState extends State<PhotosPage> {
   bool _isLoading = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late String tourUid;
+  UserRepository? user;
 
   Future<void> _refreshData() async {
     setState(() {
       _isLoading = true;
     });
     try {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
           .collection('users')
           .where('images', isNotEqualTo: null)
           .get();
 
       List<String> images = [];
       for (var doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
+        final data = doc.data()
+        as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
         if (data != null && data.containsKey('images')) {
           List<dynamic> imageUrls = data['images'];
           images.addAll(imageUrls.map((url) => url.toString()));
@@ -54,7 +58,8 @@ class _PhotosPageState extends State<PhotosPage> {
           .listen((QuerySnapshot snapshot) {
         List<String> updatedImages = [];
         for (var doc in snapshot.docs) {
-          final data = doc.data() as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
+          final data = doc.data()
+          as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
           if (data != null && data.containsKey('images')) {
             List<dynamic> imageUrls = data['images'];
             updatedImages.addAll(imageUrls.map((url) => url.toString()));
@@ -90,7 +95,8 @@ class _PhotosPageState extends State<PhotosPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.update),
-            onPressed: _uploadImages, // Call function to upload images
+            onPressed: sendFaceRecognitionRequest,
+            // Call function to upload images
             tooltip: 'Update Images',
           ),
           IconButton(
@@ -141,7 +147,8 @@ class _PhotosPageState extends State<PhotosPage> {
                   imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Center(child: Text('Failed to load image'));
+                    return const Center(
+                        child: Text('Failed to load image'));
                   },
                 ),
               ),
@@ -154,8 +161,38 @@ class _PhotosPageState extends State<PhotosPage> {
 
   Future<List<String>> sendFaceRecognitionRequest() async {
     String userID = _auth.currentUser!.uid;
+    try {
+      // Get user data from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .get();
 
-    final url = Uri.parse('http://your_local_ip:5000/face_recognition');
+      // Check if user data exists and contains bookings
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+      if (userData != null && userData.containsKey('bookings')) {
+        List<dynamic> bookings = userData['bookings'];
+
+        // Assuming you want to get the tourUid from the first booking (index 0)
+        if (bookings.isNotEmpty) {
+          Map<String, dynamic> firstBooking = bookings[0];
+          if (firstBooking.containsKey('tourUid')) {
+            tourUid = firstBooking['tourUid'];
+          } else {
+            print('tourUid not found in first booking');
+          }
+        } else {
+          print('No bookings found');
+        }
+      } else {
+        print('User data or bookings not found');
+      }
+    } catch (e) {
+      print('Error uploading images: $e');
+      // Handle error, show error message, etc.
+    }
+
+    final url = Uri.parse('http://10.54.12.49:5000/face_recognition');
     final body = jsonEncode({'userID': userID, 'tourID': tourUid});
 
     final response = await http.post(
@@ -163,14 +200,37 @@ class _PhotosPageState extends State<PhotosPage> {
       headers: {'Content-Type': 'application/json'},
       body: body,
     );
-
+    print(response);
     if (response.statusCode == 200) {
       final recognizedImageUrls = List<String>.from(jsonDecode(response.body));
+
+      // Update user document in Firestore with the list of download URLs
+      await updateUserImagesInFirestore(userID, recognizedImageUrls);
+
       return recognizedImageUrls;
     } else {
       throw Exception('Failed to perform face recognition');
     }
   }
+
+  Future<void> updateUserImagesInFirestore(
+      String userID, List<String> imageUrls) async {
+    try {
+      // Get user document reference
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+
+      // Loop through each image URL and add it to the 'images' array
+      for (String imageUrl in imageUrls) {
+        await userRef.update({
+          'images': FieldValue.arrayUnion([imageUrl])
+        });
+      }
+    } catch (e) {
+      print('Error updating user images in Firestore: $e');
+      // Handle error as needed
+    }
+  }
+
 
   Future<void> _uploadImages() async {
     try {
@@ -199,13 +259,15 @@ class _PhotosPageState extends State<PhotosPage> {
                   firebase_storage.FirebaseStorage.instance;
               for (int i = 0; i < images.length; i++) {
                 XFile image = images[i];
-                String imageName = 'image_${image.name}_$i'; // Unique image name
+                String imageName =
+                    'image_${image.name}_$i'; // Unique image name
                 firebase_storage.Reference ref = storage
                     .ref()
                     .child('tours')
                     .child(tourUid) // Use the tourUid retrieved from Firestore
                     .child(imageName);
-                await ref.putFile(File(image.path)); // Upload the file using its path
+                await ref.putFile(
+                    File(image.path)); // Upload the file using its path
               }
               // Show a success message or update UI as needed
             }
@@ -265,11 +327,9 @@ class _PhotosPageState extends State<PhotosPage> {
     }
   }
 
-
   @override
   void dispose() {
     _userImagesSubscription?.cancel();
     super.dispose();
   }
-
 }

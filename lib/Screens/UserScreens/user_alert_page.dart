@@ -1,41 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class UserAlertsPage extends StatefulWidget {
-  const UserAlertsPage({super.key});
-
   @override
   _UserAlertsPageState createState() => _UserAlertsPageState();
 }
-
 class _UserAlertsPageState extends State<UserAlertsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late Stream<QuerySnapshot> _alertsStream = const Stream.empty();
-
+  late Stream<QuerySnapshot> _alertsStream;
   @override
   void initState() {
     super.initState();
     _subscribeToAlerts();
   }
-
-  void _subscribeToAlerts() async {
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final User? user = auth.currentUser;
-    if (user != null) {
-      // Get the current user's document
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
-      // Check if the user document exists and has the 'groups' array
-      if (userDoc.exists && userDoc.data() != null && userDoc.data()!['groups'] != null) {
-        // Get the first group ID from the 'groups' array
-        var groupId = userDoc.data()!['groups'][0];
-        groupId = groupId.split('+').first;
-        // Subscribe to alerts for the obtained group ID
-        _alertsStream = _firestore.collection('groups').doc(groupId).collection('alerts').orderBy('timestamp', descending: true).snapshots();
-        // Add orderBy clause to sort alerts by timestamp
-        setState(() {});
-      }
-    }
+  void _subscribeToAlerts() {
+    // Replace 'group_id' with the actual ID of the group
+    _alertsStream = _firestore.collection('groups').doc('zvzG4f8Duhga5y206BDD').collection('alerts').orderBy('timestamp', descending: true).snapshots();
+    // Add orderBy clause to sort alerts by timestamp
   }
 
   Future<void> _refreshAlerts() async {
@@ -88,7 +70,7 @@ class _UserAlertsPageState extends State<UserAlertsPage> {
                 DateTime dateTime = timestamp.toDate();
 
                 // Alternate background color based on index
-                Color cardColor = index % 2 == 0 ? const Color(0xFFa2d19f) :Colors.white;
+                Color cardColor = index % 2 == 0 ? Colors.white : const Color(0xFFa2d19f);
 
                 return Card(
                   elevation: 4.0,
@@ -128,6 +110,7 @@ class _UserAlertsPageState extends State<UserAlertsPage> {
                     ),
                   ),
                 );
+
               },
             );
           },
