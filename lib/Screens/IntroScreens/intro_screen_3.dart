@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class IntroPage3 extends StatelessWidget {
-  const IntroPage3({Key? key}) : super(key: key);
+  const IntroPage3({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFa2d19f),
+      backgroundColor: const Color(0xFFa2d19f),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -18,8 +18,8 @@ class IntroPage3 extends StatelessWidget {
               height: 250,
               width: 250,
             ),
-            SizedBox(height: 32),
-            Text(
+            const SizedBox(height: 32),
+            const Text(
               "Intelligent Photo Sharing",
               style: TextStyle(
                 color: Color(0xFF172614),
@@ -27,8 +27,8 @@ class IntroPage3 extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "ExploreEase intelligently organizes user photos in such a way that users upload all the images which is detected through faces and separate them according to user profile.",
               style: TextStyle(
                 color: Color(0xFF172614),
@@ -36,8 +36,8 @@ class IntroPage3 extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 40),
-            Text(
+            const SizedBox(height: 40),
+            const Text(
               "Discover the magic of intelligent photo management with ExploreEase.",
               style: TextStyle(
                 color: Color(0xFF172614),

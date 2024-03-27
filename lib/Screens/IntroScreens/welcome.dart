@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -8,14 +7,14 @@ import 'intro_screen_2.dart';
 import 'intro_screen_3.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  PageController _controller = PageController();
+  final PageController _controller = PageController();
   bool onLastPage = false;
 
   @override
@@ -30,7 +29,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 onLastPage = (index == 2);
               });
             },
-            children: [
+            children: const [
               IntroPage1(),
               IntroPage2(),
               IntroPage3(),
@@ -48,14 +47,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       _controller.jumpToPage(2);
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
+                      foregroundColor: const Color(0xFFa2d19f), backgroundColor: const Color(0xFF172614),
                     ),
-                    child: Text('Skip'),
+                    child: const Text('Skip'),
                   ),
                   SmoothPageIndicator(
                     controller: _controller,
                     count: 3,
-                    effect: WormEffect(
+                    effect: const WormEffect(
                       activeDotColor: Color(0xFF172614),
                     ),
                   ),
@@ -65,26 +64,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          return LoginScreen();
+                          return const LoginScreen();
                         }),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
+                      foregroundColor: const Color(0xFFa2d19f), backgroundColor: const Color(0xFF172614),
                     ),
-                        child: Text('Done'),
+                        child: const Text('Done'),
                   )
                       : ElevatedButton(
                     onPressed: () {
                       _controller.nextPage(
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.easeIn,
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Color(0xFFa2d19f), backgroundColor: Color(0xFF172614),
+                      foregroundColor: const Color(0xFFa2d19f), backgroundColor: const Color(0xFF172614),
                     ),
-                    child: Text('Next'),
+                    child: const Text('Next'),
                   ),
                 ],
               ),

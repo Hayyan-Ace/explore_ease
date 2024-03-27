@@ -8,7 +8,7 @@ import '../../Services/ChatRepository/chat_service.dart';
 class GuideAlertPage extends StatefulWidget {
   final String tourName;
 
-  const GuideAlertPage({Key? key, required this.tourName}) : super(key: key);
+  const GuideAlertPage({super.key, required this.tourName});
 
   @override
   _GuideAlertPageState createState() => _GuideAlertPageState();
@@ -138,11 +138,11 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
           children: [
             TextField(
               controller: _titleController, // Use _titleController
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Title', // Set label for the title
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: const Color(0xFFa2d19f)), // Set focused border color
+                  borderSide: BorderSide(color: Color(0xFFa2d19f)), // Set focused border color
                 ),
                 hintText: 'Enter title',
                 hintStyle: TextStyle(color: Colors.grey),
@@ -151,11 +151,11 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
             const SizedBox(height: 20.0),
             TextField(
               controller: _messageController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Message',
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: const Color(0xFFa2d19f)), // Set focused border color
+                  borderSide: BorderSide(color: Color(0xFFa2d19f)), // Set focused border color
                 ),
                 hintText: 'Enter message',
                 hintStyle: TextStyle(color: Colors.grey),
@@ -167,7 +167,7 @@ class _GuideAlertPageState extends State<GuideAlertPage> {
             ElevatedButton(
               onPressed: _sendMessage,
               style: ElevatedButton.styleFrom(
-                primary: const Color(0xFFa2d19f), // Set button color
+                backgroundColor: const Color(0xFFa2d19f), // Set button color
               ),
               child: const Text(
                 'Send Notification',

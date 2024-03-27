@@ -4,7 +4,7 @@ class LargeText extends StatelessWidget{
   double size ;
   final String text;
   final Color color;
-  LargeText ({Key? key, required this.text, this.color = Colors.black54 , this.size = 16}) : super(key : key);
+  LargeText ({super.key, required this.text, this.color = Colors.black54 , this.size = 16});
 
 
   @override

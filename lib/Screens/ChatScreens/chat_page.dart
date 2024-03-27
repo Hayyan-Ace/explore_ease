@@ -11,11 +11,11 @@ class Chat extends StatefulWidget {
   final String userName;
 
   const Chat({
-    Key? key,
+    super.key,
     required this.groupId,
     required this.groupName,
     required this.userName,
-  }) : super(key: key);
+  });
 
   @override
   State<Chat> createState() => _ChatState();
@@ -25,7 +25,7 @@ class _ChatState extends State<Chat> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -120,11 +120,11 @@ class ChatMessages extends StatelessWidget {
   final ScrollController scrollController;
 
   const ChatMessages({
-    Key? key,
+    super.key,
     required this.chats,
     required this.userName,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +135,7 @@ class ChatMessages extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        WidgetsBinding.instance!.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           scrollController.animateTo(
             scrollController.position.maxScrollExtent,
             duration: const Duration(milliseconds: 300),
@@ -164,10 +164,10 @@ class SendMessageContainer extends StatelessWidget {
   final VoidCallback sendMessage;
 
   const SendMessageContainer({
-    Key? key,
+    super.key,
     required this.messageController,
     required this.sendMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

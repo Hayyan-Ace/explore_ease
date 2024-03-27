@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Screens/AdminScreens/admin_home_page.dart';
 import 'package:travel_ease_fyp/Screens/AdminScreens/admin_logout_page.dart';
@@ -77,7 +76,7 @@ class _AdminPanelMainState extends State<AdminPanelMain>{
           unselectedFontSize: 0,
           selectedIconTheme: const IconThemeData(color: Color(0xFFa2d19f)), // Set the default color for selected icons
           unselectedIconTheme: const IconThemeData(color: Colors.black), // Set the default color for unselected icons
-          selectedItemColor: Color(0xFFa2d19f), // Set the font color for the selected item
+          selectedItemColor: const Color(0xFFa2d19f), // Set the font color for the selected item
 
           items: const [
             BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),

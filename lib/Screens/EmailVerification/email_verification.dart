@@ -65,8 +65,8 @@ class EmailVerificationScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   shape: const StadiumBorder(),
                   elevation: 10,
-                  shadowColor: Color(0xFFa2d19f),
-                  backgroundColor: Color(0xFFa2d19f).withOpacity(0.9),
+                  shadowColor: const Color(0xFFa2d19f),
+                  backgroundColor: const Color(0xFFa2d19f).withOpacity(0.9),
                 ),
                 child: const Text(
                   'Resend Verification Email',

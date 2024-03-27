@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class CreateTourPage extends StatefulWidget {
-  const CreateTourPage({Key? key}) : super(key: key);
+  const CreateTourPage({super.key});
 
   @override
   _CreateTourPageState createState() => _CreateTourPageState();
@@ -153,6 +153,7 @@ class _CreateTourPageState extends State<CreateTourPage> {
     return imageUrl;
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,

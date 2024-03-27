@@ -8,11 +8,10 @@ class GroupTile extends StatefulWidget {
   final String groupId;
   final String groupName;
   const GroupTile(
-      {Key? key,
+      {super.key,
         required this.groupId,
         required this.groupName,
-        required this.userName})
-      : super(key: key);
+        required this.userName});
 
   @override
   State<GroupTile> createState() => _GroupTileState();

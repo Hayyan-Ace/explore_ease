@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminHomePage extends StatefulWidget {
-  const AdminHomePage({Key? key});
+  const AdminHomePage({super.key});
 
   @override
   _AdminHomePageState createState() => _AdminHomePageState();
@@ -22,15 +22,23 @@ class _AdminHomePageState extends State<AdminHomePage> {
     List<Map<String, dynamic>> tempList = [];
     var data = await collection.get();
 
-    data.docs.forEach((element) {
-      tempList.add(element.data());
-    });
+    for (var element in data.docs) {
+      var userData = element.data();
+      if (userData is Map<String, dynamic>) {
+        tempList.add(userData);
+      } else {
+        print("Unexpected data format: $userData");
+      }
+    }
 
     setState(() {
       items = tempList;
       isLoaded = true;
     });
   }
+
+
+
 
   @override
   void initState() {
@@ -40,9 +48,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   Future<void> _fetchCounts() async {
     try {
-      CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-      QuerySnapshot usersSnapshot = await usersCollection.get();
-
+      // Fetch total users count
+      QuerySnapshot usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
       setState(() {
         totalUsersCount = usersSnapshot.size;
       });
@@ -53,10 +60,27 @@ class _AdminHomePageState extends State<AdminHomePage> {
       // Count unverified payments by iterating through user data
       int unverifiedPaymentsCount = 0;
       for (var user in items) {
-        List<dynamic>? bookings = user["bookings"];
-        if (bookings != null && bookings.isNotEmpty) {
-          for (var booking in bookings) {
-            if (booking != null && booking is Map<String, dynamic> && !booking['verified']) {
+        // Access the "bookings" field
+        var bookingsData = user["bookings"];
+
+        // Handle null or empty bookings
+        if (bookingsData == null || bookingsData is List && bookingsData.isEmpty) {
+          continue; // Skip this user
+        }
+
+        // Handle bookings as list of maps
+        if (bookingsData is List) {
+          for (var booking in bookingsData) {
+            if (booking is Map<String, dynamic> && booking['verified'] == false) {
+              unverifiedPaymentsCount++;
+            }
+          }
+        }
+
+        // Handle bookings as map
+        if (bookingsData is Map<String, dynamic>) {
+          for (var booking in bookingsData.values) {
+            if (booking is Map<String, dynamic> && booking['verified'] == false) {
               unverifiedPaymentsCount++;
             }
           }
@@ -67,9 +91,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
         totalUnverifiedPaymentsCount = unverifiedPaymentsCount;
       });
 
-      CollectionReference activeToursCollection = FirebaseFirestore.instance.collection('Tour');
-      QuerySnapshot activeToursSnapshot = await activeToursCollection.get();
-
+      // Fetch total active tours count
+      QuerySnapshot activeToursSnapshot = await FirebaseFirestore.instance.collection('Tour').get();
       setState(() {
         totalActiveToursCount = activeToursSnapshot.size;
       });
@@ -77,6 +100,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
       print('Error fetching counts: $e');
     }
   }
+
 
   Future<void> _handleRefresh() async {
     // You can perform any background tasks or fetch new data here

@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Screens/AdminScreens/admin_logout_page.dart';
 import 'package:travel_ease_fyp/Screens/GuideScreens/guide_chat_page.dart';
 import 'package:travel_ease_fyp/Screens/GuideScreens/guide_home_page.dart';
-import 'package:travel_ease_fyp/Screens/UserScreens/user_chat_page.dart';
 import 'package:travel_ease_fyp/Screens/Profile/profile_page.dart';
 import '../../Services/AuthentactionRepository/authentication_repository.dart';
 
@@ -18,7 +16,7 @@ class _GuidePanelMainState extends State<GuidePanelMain>{
   List pages = [
     const GuideHomePage(),
     const GuideChatPage(),
-    ProfilePage(),
+    const ProfilePage(),
     const AdminLogoutPage(),
   ];
 

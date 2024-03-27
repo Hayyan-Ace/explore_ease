@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_ease_fyp/Widgets/tour_detail_page.dart';
@@ -16,7 +15,7 @@ class SlideItem extends StatefulWidget {
   final String startDestination;
   final String endDestination;
 
-  SlideItem({
+  SlideItem({super.key, 
     required this.name,
     required this.imgUrl,
     required this.index,
@@ -97,8 +96,8 @@ class _SlideItemState extends State<SlideItem> {
                     imageUrl: widget.imgUrl,
                     fit: BoxFit.cover,
                     height: 420, // Adjust the height as needed
-                    placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
               ),

@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/material.dart';
 
 class AlertService {
   String? mtoken = " ";
@@ -20,8 +19,8 @@ class AlertService {
   void _initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('app_icon');
-    final InitializationSettings initializationSettings =
-    const InitializationSettings(android: initializationSettingsAndroid);
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       // onSelectNotification: (String? payload) async {

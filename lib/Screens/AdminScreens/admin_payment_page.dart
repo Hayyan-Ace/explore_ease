@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../Services/ChatRepository/chat_service.dart';
 
 class AdminPaymentPage extends StatefulWidget {
-  const AdminPaymentPage({Key? key}) : super(key: key);
+  const AdminPaymentPage({super.key});
 
 
   @override
@@ -29,17 +28,18 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
 
   _fetchUserData() async {
     List<Map<String, dynamic>> tempList = [];
-    var data = await collection.get();
+    var querySnapshot = await collection.get();
 
-    data.docs.forEach((element) {
-      tempList.add(element.data());
-    });
+    for (var doc in querySnapshot.docs) {
+      tempList.add(doc.data());
+    }
 
     setState(() {
       items = tempList;
       isLoaded = true;
     });
   }
+
 
   Future<void> _handleRefresh() async {
     await _fetchUserData();
@@ -129,8 +129,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     int count = 0;
 
     for (var user in items) {
-      List<dynamic>? bookings = user["bookings"];
-      if (bookings != null && bookings.isNotEmpty) {
+      if (user.containsKey("bookings") && user["bookings"] is List<dynamic>) {
+        List<dynamic> bookings = user["bookings"];
         for (var booking in bookings) {
           if (booking != null && booking is Map<String, dynamic> && !booking['verified']) {
             count++;
@@ -142,14 +142,21 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     return count;
   }
 
+
+
   List<Map<String, dynamic>> getFilteredPayments() {
     if (showVerifiedPayments) {
       return items;
     } else {
       return items
-          .where((user) => (user['bookings'] as List<dynamic>?)
-          ?.any((booking) => booking is Map<String, dynamic> && !booking['verified']) ??
-          false)
+          .where((user) {
+        final bookings = user['bookings'];
+        if (bookings is List<dynamic>) {
+          return bookings.any((booking) =>
+          booking is Map<String, dynamic> && !booking['verified']);
+        }
+        return false;
+      })
           .toList();
     }
   }
@@ -222,7 +229,12 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
               isLoaded
                   ? Expanded(
                 child: ListView.builder(
-                  itemCount: filteredPayments.length,
+                  itemCount: filteredPayments.fold<int>(0, (total, user) {
+                    if (user.containsKey("bookings") && user["bookings"] is List<dynamic>) {
+                      total += (user["bookings"] as List<dynamic>).length;
+                    }
+                    return total;
+                  }),
                   itemBuilder: (context, userIndex) {
                     List<dynamic>? bookings = filteredPayments[userIndex]["bookings"];
                     if (bookings != null && bookings.isNotEmpty) {
@@ -263,19 +275,19 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                                       children: [
                                         Text(
                                           filteredPayments[userIndex]["username"] ?? "Username not available",
-                                          style: Theme.of(context).textTheme.headline6?.copyWith(
+                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Text(
                                           'Tour Name: ${bookings[bookingIndex]['tourName']}',
-                                          style: Theme.of(context).textTheme.bodyText1,
+                                          style: Theme.of(context).textTheme.bodyLarge,
                                         ),
                                         Row(
                                           children: [
                                             Text(
                                               'Verified: ',
-                                              style: Theme.of(context).textTheme.bodyText1,
+                                              style: Theme.of(context).textTheme.bodyLarge,
                                             ),
                                             Icon(
                                               bookings[bookingIndex]['verified'] == true

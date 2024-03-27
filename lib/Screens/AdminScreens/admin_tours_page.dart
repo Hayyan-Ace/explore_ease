@@ -5,7 +5,7 @@ import 'create_tour_page.dart';
 import 'edit_tour_page.dart';
 
 class AdminToursPage extends StatefulWidget {
-  const AdminToursPage({Key? key}) : super(key: key);
+  const AdminToursPage({super.key});
 
   @override
   State<AdminToursPage> createState() => _AdminToursPageState();
@@ -46,7 +46,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CreateTourPage(),
+        builder: (context) => const CreateTourPage(),
       ),
     );
   }
@@ -62,9 +62,9 @@ class _AdminToursPageState extends State<AdminToursPage> {
     List<Map<String, dynamic>> tempList = [];
     var data = await collection.get();
 
-    data.docs.forEach((element) {
+    for (var element in data.docs) {
       tempList.add(element.data());
-    });
+    }
 
     setState(() {
       items = tempList;
@@ -103,7 +103,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
     if (tourData != null && tourData.containsKey("tourGuide") && tourData["tourGuide"] != "") {
       // If a tour guide is already assigned, show a message and return
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("A tour guide is already assigned to this tour.")),
+        const SnackBar(content: Text("A tour guide is already assigned to this tour.")),
       );
       return;
     }
@@ -115,12 +115,12 @@ class _AdminToursPageState extends State<AdminToursPage> {
         .where("assignedTour", isEqualTo: "")
         .get();
 
-    usersSnapshot.docs.forEach((userDoc) {
+    for (var userDoc in usersSnapshot.docs) {
       var userData = userDoc.data();
       if (userData is Map<String, dynamic>) {
         guides.add(userData);
       }
-    });
+    }
 
     // Show dialog to choose a tour guide
     showDialog(
@@ -128,7 +128,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
       builder: (BuildContext context) {
         if (guides.isNotEmpty) {
           return AlertDialog(
-            title: Text('Assign Tour Guide'),
+            title: const Text('Assign Tour Guide'),
             content: SizedBox(
               width: double.maxFinite,
               height: 300,
@@ -147,14 +147,14 @@ class _AdminToursPageState extends State<AdminToursPage> {
           );
         } else {
           return AlertDialog(
-            title: Text('No Guides Available'),
-            content: Text('There are no available tour guides.'),
+            title: const Text('No Guides Available'),
+            content: const Text('There are no available tour guides.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -170,10 +170,10 @@ class _AdminToursPageState extends State<AdminToursPage> {
     // Check if a tour guide is already assigned to this tour
     var tourDoc = await collection.doc(tourId).get();
     var tourData = tourDoc.data() as Map<String, dynamic>; // Explicit cast to Map<String, dynamic>
-    if (tourData != null && tourData.containsKey("tourGuide") && tourData["tourGuide"] != "") {
+    if (tourData.containsKey("tourGuide") && tourData["tourGuide"] != "") {
       // If a tour guide is already assigned, show a message and return
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("A tour guide is already assigned to this tour.")),
+        const SnackBar(content: Text("A tour guide is already assigned to this tour.")),
       );
       return;
     }
@@ -192,7 +192,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
 
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Tour guide assigned successfully!")),
+      const SnackBar(content: Text("Tour guide assigned successfully!")),
     );
   }
 
@@ -241,13 +241,13 @@ class _AdminToursPageState extends State<AdminToursPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: const Text('Delete'),
               onPressed: () {
                 _deleteTour(tourId);
                 Navigator.of(context).pop();
@@ -361,7 +361,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
                           children: [
                             Text(
                               items[index]["tourName"] ?? "Not Given",
-                              style: Theme.of(context).textTheme.headline6?.copyWith(
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -370,7 +370,7 @@ class _AdminToursPageState extends State<AdminToursPage> {
                         subtitle: Text(
                           items[index]["description"] ?? "",
                           style:
-                          Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
                           maxLines: 5,
                         ),
                         trailing: PopupMenuButton<String>(

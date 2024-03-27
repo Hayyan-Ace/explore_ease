@@ -22,12 +22,12 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: LoadingScreen(),
+      home: const LoadingScreen(),
       theme: ThemeData(
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {

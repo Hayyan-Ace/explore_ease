@@ -2,7 +2,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_ease_fyp/Widgets/booking_dialoguebox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +10,7 @@ class TourDetailsPage extends StatelessWidget {
   final String tourID;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  TourDetailsPage({required this.tourID});
+  TourDetailsPage({super.key, required this.tourID});
 
   @override
   Widget build(BuildContext context) {

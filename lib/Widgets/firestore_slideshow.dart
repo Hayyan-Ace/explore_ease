@@ -6,11 +6,13 @@ class SlideshowScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final PageController _pageController = PageController(viewportFraction: 0.85);
 
+  SlideshowScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     DateTime currentDate = DateTime.now();
 
-    return Container(
+    return SizedBox(
       height: 300, // Adjust the height as needed
       child: StreamBuilder<QuerySnapshot>(
         stream: _firestore

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AlertBox extends StatelessWidget{
   final String text1;
   final String text2;
-  AlertBox ({Key? key, required this.text1, required this.text2}) : super(key : key);
+  const AlertBox ({super.key, required this.text1, required this.text2});
 
 
   @override
@@ -14,7 +14,7 @@ class AlertBox extends StatelessWidget{
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('OK'),
+          child: const Text('OK'),
         ),
       ],
     );

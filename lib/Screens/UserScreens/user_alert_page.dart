@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserAlertsPage extends StatefulWidget {
+  const UserAlertsPage({super.key});
+
   @override
   _UserAlertsPageState createState() => _UserAlertsPageState();
 }
 
 class _UserAlertsPageState extends State<UserAlertsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late Stream<QuerySnapshot> _alertsStream;
+  late Stream<QuerySnapshot> _alertsStream = const Stream.empty();
 
   @override
   void initState() {
@@ -16,10 +19,23 @@ class _UserAlertsPageState extends State<UserAlertsPage> {
     _subscribeToAlerts();
   }
 
-  void _subscribeToAlerts() {
-    // Replace 'group_id' with the actual ID of the group
-    _alertsStream = _firestore.collection('groups').doc('zvzG4f8Duhga5y206BDD').collection('alerts').orderBy('timestamp', descending: true).snapshots();
-    // Add orderBy clause to sort alerts by timestamp
+  void _subscribeToAlerts() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    if (user != null) {
+      // Get the current user's document
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      // Check if the user document exists and has the 'groups' array
+      if (userDoc.exists && userDoc.data() != null && userDoc.data()!['groups'] != null) {
+        // Get the first group ID from the 'groups' array
+        var groupId = userDoc.data()!['groups'][0];
+        groupId = groupId.split('+').first;
+        // Subscribe to alerts for the obtained group ID
+        _alertsStream = _firestore.collection('groups').doc(groupId).collection('alerts').orderBy('timestamp', descending: true).snapshots();
+        // Add orderBy clause to sort alerts by timestamp
+        setState(() {});
+      }
+    }
   }
 
   Future<void> _refreshAlerts() async {
@@ -112,7 +128,6 @@ class _UserAlertsPageState extends State<UserAlertsPage> {
                     ),
                   ),
                 );
-
               },
             );
           },

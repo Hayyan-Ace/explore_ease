@@ -1,19 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../Services/ChatRepository/chat_service.dart';
-import '../../Widgets/widgets.dart';
-import '../UserScreens/user_chat_page.dart';
 
 class GroupInfo extends StatefulWidget {
   final String groupId;
   final String groupName;
   final String adminName;
   const GroupInfo(
-      {Key? key,
+      {super.key,
         required this.adminName,
         required this.groupName,
-        required this.groupId})
-      : super(key: key);
+        required this.groupId});
 
   @override
   State<GroupInfo> createState() => _GroupInfoState();
@@ -54,7 +51,7 @@ class _GroupInfoState extends State<GroupInfo> {
         elevation: 0,
         backgroundColor: Colors.white, // Changed app bar background color
         title: const Text("Group Info", style: TextStyle(color: Colors.black)), // Adjusted text color
-        actions: [
+        actions: const [
 
         ],
       ),

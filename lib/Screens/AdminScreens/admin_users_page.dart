@@ -191,7 +191,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                           Text(
 
                             item["username"] + " " ?? "not given",
-                            style: Theme.of(context).textTheme.headline6?.copyWith(
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -206,7 +206,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                       ),
                       subtitle: Text(
                         item["uid"],
-                        style: Theme.of(context).textTheme.bodyText2?.copyWith(height: 1.5),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),

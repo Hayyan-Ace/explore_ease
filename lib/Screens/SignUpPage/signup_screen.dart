@@ -36,7 +36,7 @@ class SignUpScreen extends StatelessWidget {
                 ],
                 decoration: const InputDecoration(labelText: 'Full Name'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _userNameController,
                 decoration: const InputDecoration(labelText: 'Username'),

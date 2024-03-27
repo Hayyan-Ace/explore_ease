@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_fyp/Screens/AdminScreens/admin_logout_page.dart';
 import 'package:travel_ease_fyp/Screens/UserScreens/user_chat_page.dart';
@@ -15,8 +14,8 @@ class UserMainPage extends StatefulWidget{
 class _UserMainPageState extends State<UserMainPage>{
     List pages = [
     const UserHomePage(),
-     UserChatPage(),
-      ProfilePage(),
+     const UserChatPage(),
+      const ProfilePage(),
       const AdminLogoutPage(),
   ];
 
@@ -44,7 +43,7 @@ class _UserMainPageState extends State<UserMainPage>{
           elevation: 0,
           selectedIconTheme: const IconThemeData(color: Color(0xFFa2d19f)), // Set the default color for selected icons
           unselectedIconTheme: const IconThemeData(color: Colors.black), // Set the default color for unselected icons
-          selectedItemColor: Color(0xFFa2d19f), // Set the font color for the selected item
+          selectedItemColor: const Color(0xFFa2d19f), // Set the font color for the selected item
 
           items: const [
           BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),

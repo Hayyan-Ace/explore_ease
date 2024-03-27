@@ -12,6 +12,8 @@ import 'package:travel_ease_fyp/Screens/Profile/profile_controller.dart';
 import 'profile_field.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -86,12 +88,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           const RelativeRect.fromLTRB(100, 200, 50, 0),
                           items: const [
                             PopupMenuItem(
-                              child: Text('Upload'),
                               value: 'change',
+                              child: Text('Upload'),
                             ),
                             PopupMenuItem(
-                              child: Text('Remove'),
                               value: 'remove',
+                              child: Text('Remove'),
                             ),
                           ],
                         );

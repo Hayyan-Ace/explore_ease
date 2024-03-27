@@ -6,13 +6,13 @@ class ProfileField extends StatelessWidget {
   final TextEditingController? controller;
   final bool readOnly;
 
-  ProfileField({
-    Key? key,
+  const ProfileField({
+    super.key,
     required this.label,
     required this.value,
     this.controller,
     this.readOnly = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class IntroPage2 extends StatelessWidget {
-  const IntroPage2({Key? key}) : super(key: key);
+  const IntroPage2({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFa2d19f),
+      backgroundColor: const Color(0xFFa2d19f),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -18,8 +18,8 @@ class IntroPage2 extends StatelessWidget {
               height: 250,
               width: 250,
             ),
-            SizedBox(height: 32),
-            Text(
+            const SizedBox(height: 32),
+            const Text(
               "Group Chats",
               style: TextStyle(
                 color: Color(0xFF172614),
@@ -27,8 +27,8 @@ class IntroPage2 extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "The platform fosters communication among travelers through features like group chats and dedicated tour groups, enhancing networking and interaction during journeys.",
               style: TextStyle(
                 color: Color(0xFF172614),
@@ -36,8 +36,8 @@ class IntroPage2 extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 40),
-            Text(
+            const SizedBox(height: 40),
+            const Text(
                 "Immerse yourself in the world of seamless group communication with ExploreEase.",
               style: TextStyle(
                 color: Color(0xFF172614),

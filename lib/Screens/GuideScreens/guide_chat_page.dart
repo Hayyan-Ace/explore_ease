@@ -6,7 +6,7 @@ import '../ChatScreens/chat_page.dart';
 import 'guide_alerts_page.dart';
 
 class GuideChatPage extends StatefulWidget {
-  const GuideChatPage({Key? key}) : super(key: key);
+  const GuideChatPage({super.key});
 
   @override
   _GuideChatPageState createState() => _GuideChatPageState();
@@ -92,7 +92,7 @@ class _GuideChatPageState extends State<GuideChatPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PhotosPage(),
+                    builder: (context) => const PhotosPage(),
                   ),
                 );
                },

@@ -12,7 +12,7 @@ class BookingDialog extends StatefulWidget {
   final String tourID;
   final String tourDate; // Add this line
 
-  BookingDialog({
+  const BookingDialog({super.key, 
   required this.tourName,
   required this.tourID,
   required this.tourDate,
@@ -62,7 +62,7 @@ class _BookingDialogState extends State<BookingDialog> {
 
   Future<void> _confirmTour() async {
     // Ensure _receiptImageUrl is initialized before using it
-    if (_receiptImageUrl == null || _receiptImageUrl.isEmpty) {
+    if (_receiptImageUrl.isEmpty) {
       Fluttertoast.showToast(
         msg: "Please upload receipt",
         toastLength: Toast.LENGTH_SHORT,

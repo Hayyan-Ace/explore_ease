@@ -29,7 +29,7 @@ class AuthenticationRepository extends GetxController {
   late String _phoneNo;
 
   // Define the users collection
-  late CollectionReference _usersCollection =
+  late final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
 
   @override
@@ -207,7 +207,7 @@ class AuthenticationRepository extends GetxController {
       return true;
     } catch (e) {
       // Handle Firestore query error if needed
-      throw e;
+      rethrow;
     }
   }
 }
