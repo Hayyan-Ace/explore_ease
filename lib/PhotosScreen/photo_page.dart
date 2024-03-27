@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,8 +12,6 @@ import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class PhotosPage extends StatefulWidget {
-  const PhotosPage({super.key});
-
   @override
   _PhotosPageState createState() => _PhotosPageState();
 }
@@ -36,8 +35,8 @@ class _PhotosPageState extends State<PhotosPage> {
 
       List<String> images = [];
       for (var doc in snapshot.docs) {
-        final data = doc.data(); // Cast data to Map<String, dynamic>
-        if (data.containsKey('images')) {
+        final data = doc.data() as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
+        if (data != null && data.containsKey('images')) {
           List<dynamic> imageUrls = data['images'];
           images.addAll(imageUrls.map((url) => url.toString()));
         }
@@ -194,21 +193,23 @@ class _PhotosPageState extends State<PhotosPage> {
 
             // Now you have the tourUid, proceed with image upload using tourUid
             final picker = ImagePicker();
-            final List<XFile> images = await picker.pickMultiImage();
-            firebase_storage.FirebaseStorage storage =
-                firebase_storage.FirebaseStorage.instance;
-            for (int i = 0; i < images.length; i++) {
-              XFile image = images[i];
-              String imageName = 'image_${image.name}_$i'; // Unique image name
-              firebase_storage.Reference ref = storage
-                  .ref()
-                  .child('tours')
-                  .child(tourUid) // Use the tourUid retrieved from Firestore
-                  .child(imageName);
-              await ref.putFile(File(image.path)); // Upload the file using its path
+            final List<XFile>? images = await picker.pickMultiImage();
+            if (images != null) {
+              firebase_storage.FirebaseStorage storage =
+                  firebase_storage.FirebaseStorage.instance;
+              for (int i = 0; i < images.length; i++) {
+                XFile image = images[i];
+                String imageName = 'image_${image.name}_$i'; // Unique image name
+                firebase_storage.Reference ref = storage
+                    .ref()
+                    .child('tours')
+                    .child(tourUid) // Use the tourUid retrieved from Firestore
+                    .child(imageName);
+                await ref.putFile(File(image.path)); // Upload the file using its path
+              }
+              // Show a success message or update UI as needed
             }
-            // Show a success message or update UI as needed
-                    } else {
+          } else {
             print('tourUid not found in first booking');
           }
         } else {
