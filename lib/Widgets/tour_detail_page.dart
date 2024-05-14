@@ -223,7 +223,7 @@ class TourDetailsPage extends StatelessWidget {
         ),
       );
       displayPaymentSheet(context, tourData);
-      //_confirmTourStripe(tourData);
+      _confirmTourStripe(tourData);
     } catch (e, s) {
       print('exception:$e$s');
     }
@@ -246,7 +246,6 @@ class TourDetailsPage extends StatelessWidget {
 
       Future<void> displayPaymentSheet(BuildContext context,Map<String, dynamic> tourData) async {
     try {
-      _confirmTourStripe(tourData);
       await Stripe.instance.presentPaymentSheet();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment successful')));
 

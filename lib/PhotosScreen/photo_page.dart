@@ -22,6 +22,8 @@ class _PhotosPageState extends State<PhotosPage> {
   StreamSubscription? _userImagesSubscription;
   bool _isLoading = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late var currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+
   late String tourUid;
   UserRepository? user;
 
@@ -30,19 +32,22 @@ class _PhotosPageState extends State<PhotosPage> {
       _isLoading = true;
     });
     try {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+      DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
           .instance
           .collection('users')
-          .where('images', isNotEqualTo: null)
+          .doc(currentUserUid)
           .get();
-
       List<String> images = [];
-      for (var doc in snapshot.docs) {
-        final data = doc.data()
-        as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
+      if (userDoc.exists) {
+        final data = userDoc.data();
         if (data != null && data.containsKey('images')) {
           List<dynamic> imageUrls = data['images'];
-          images.addAll(imageUrls.map((url) => url.toString()));
+          List<String> images = imageUrls.map((url) => url.toString()).toList();
+
+          // Process the 'images' list as needed
+          print('Images array: $images');
+        } else {
+          print('No images found for the current user.');
         }
       }
 
@@ -50,20 +55,17 @@ class _PhotosPageState extends State<PhotosPage> {
         userImages = images;
       });
 
-      // Listen for real-time updates
+// Listen for real-time updates on the current user's document
       _userImagesSubscription = FirebaseFirestore.instance
           .collection('users')
-          .where('images', isNotEqualTo: null)
+          .doc(currentUserUid)
           .snapshots()
-          .listen((QuerySnapshot snapshot) {
+          .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
         List<String> updatedImages = [];
-        for (var doc in snapshot.docs) {
-          final data = doc.data()
-          as Map<String, dynamic>?; // Cast data to Map<String, dynamic>
-          if (data != null && data.containsKey('images')) {
-            List<dynamic> imageUrls = data['images'];
-            updatedImages.addAll(imageUrls.map((url) => url.toString()));
-          }
+        final data = snapshot.data();
+        if (data != null && data.containsKey('images')) {
+          List<dynamic> imageUrls = data['images'];
+          updatedImages = imageUrls.map((url) => url.toString()).toList();
         }
 
         setState(() {
@@ -217,7 +219,8 @@ class _PhotosPageState extends State<PhotosPage> {
       String userID, List<String> imageUrls) async {
     try {
       // Get user document reference
-      final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+      final userRef =
+      FirebaseFirestore.instance.collection('users').doc(userID);
 
       // Loop through each image URL and add it to the 'images' array
       for (String imageUrl in imageUrls) {
@@ -230,7 +233,6 @@ class _PhotosPageState extends State<PhotosPage> {
       // Handle error as needed
     }
   }
-
 
   Future<void> _uploadImages() async {
     try {
