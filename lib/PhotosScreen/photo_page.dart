@@ -192,7 +192,7 @@ class _PhotosPageState extends State<PhotosPage> {
       // Handle error, show error message, etc.
     }
 
-    final url = Uri.parse('http://10.54.12.49:5000/face_recognition');
+    final url = Uri.parse('http://10.100.19.163:5000/face_recognition');
     final body = jsonEncode({'userID': userID, 'tourID': tourUid});
 
     final response = await http.post(

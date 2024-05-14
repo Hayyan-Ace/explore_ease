@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,7 +29,7 @@ class AuthenticationRepository extends GetxController {
   late String _fullName;
   late String _cnic;
   late String _phoneNo;
-
+  late Bool _hasModelTrainedInstance;
   // Define the users collection
   late final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
@@ -75,6 +77,8 @@ class AuthenticationRepository extends GetxController {
       'profilePicture': '', // Default or null, update as needed
       'isAdmin': false,
       'isGuide': false,// Default to false, update as needed
+      'isModelTrained' : false, // Default to false, update as needed
+      'imagesForModelUploaded' : false // Default to false
     });
   }
 

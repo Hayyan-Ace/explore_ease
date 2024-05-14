@@ -35,6 +35,8 @@ class _UserChatPageState extends State<UserChatPage> {
     getCurrentUser();
   }
 
+
+
   // Inside getCurrentUser() method
   getCurrentUser() async {
     User? user = _auth.currentUser;
@@ -50,6 +52,7 @@ class _UserChatPageState extends State<UserChatPage> {
       var userData = await collection.doc(_user.uid).get();
       setState(() {
         username = userData.data()?['username'] ?? '';
+        hasUploadedPhotos = userData.data()?['imagesForModelUploaded'] ?? '';
       });
     }
   }
@@ -81,7 +84,7 @@ class _UserChatPageState extends State<UserChatPage> {
       }
 
       // Check if user has uploaded photos
-      var hasPhotos = userData.data()?['hasPhotos'];
+      var hasPhotos = userData.data()?['imagesForModelUploaded'];
       if (hasPhotos != null && hasPhotos is bool && hasPhotos) {
         setState(() {
           hasUploadedPhotos = true;
@@ -167,6 +170,14 @@ class _UserChatPageState extends State<UserChatPage> {
     }
   }
 
+  Future<void> updateImagesForModelUploaded(String uid) async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'imagesForModelUploaded': true})
+        .then((_) => print('Images for model uploaded updated successfully!'))
+        .catchError((error) => print('Error updating images for model uploaded: $error'));
+  }
 
 // Function to upload photos to Firebase Storage
   Future<void> uploadPhotos() async {
@@ -189,6 +200,7 @@ class _UserChatPageState extends State<UserChatPage> {
 
           // Upload the file
           await photoRef.putFile(file);
+          await updateImagesForModelUploaded(_user.uid);
         } catch (e) {
           print('Error uploading photo: $e');
         }
