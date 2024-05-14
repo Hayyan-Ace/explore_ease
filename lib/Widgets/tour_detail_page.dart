@@ -1,16 +1,19 @@
-// tour_detail_page.dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_ease_fyp/Widgets/booking_dialoguebox.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+
+import 'booking_dialoguebox.dart';
 
 class TourDetailsPage extends StatelessWidget {
   final String tourID;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   TourDetailsPage({super.key, required this.tourID});
+  Map<String, dynamic>? paymentIntentData;
 
   @override
   Widget build(BuildContext context) {
@@ -105,17 +108,17 @@ class TourDetailsPage extends StatelessWidget {
             "Price", "${tourData['price'] ?? 'Not Available'} Rupees"),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () => _showBookingDialog(context, tourData),
+          onPressed: () {
+            _showPaymentOptionsDialog(context, tourData);
+          },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
-            elevation: 20,
-            shadowColor: const Color(0xFFa2d19f),
-            backgroundColor: const Color(0xFFa2d19f).withOpacity(0.9),
+            backgroundColor: const Color(0xFFa2d19f),
             minimumSize: const Size.fromHeight(60),
           ),
           child: const Text(
             'Book Now',
-            style: TextStyle(color: Colors.black87),
+            style: TextStyle(color: Colors.black87, fontSize: 18),
           ),
         ),
       ],
@@ -209,16 +212,94 @@ class TourDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildGreyText(String text) {
-    return Text(
-      text,
-      style: const TextStyle(color: Colors.grey),
-    );
+  Future<void> makePayment(BuildContext context, double price,Map<String, dynamic> tourData) async {
+    try {
+      paymentIntentData = await createPaymentIntent(calculateAmount(price.toString()), 'PKR');
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentData!['client_secret'],
+          style: ThemeMode.light,
+          merchantDisplayName: 'ExploreEase',
+        ),
+      );
+      displayPaymentSheet(context, tourData);
+      //_confirmTourStripe(tourData);
+    } catch (e, s) {
+      print('exception:$e$s');
+    }
   }
 
-  void _showBookingDialog(
-      BuildContext context, Map<String, dynamic> tourData) async {
-    // Check if the user already has a booking
+
+  Future<void> _confirmTourStripe(Map<String, dynamic> tourData) async {
+    // Update user's database with booking information
+    await FirebaseFirestore.instance.collection('users').doc(
+        _auth.currentUser!.uid).update({
+      'bookings': FieldValue.arrayUnion([
+        {
+          'tourName': tourData['tourName'],
+          'tourUid': tourID,
+          'verified': true,
+        }
+      ]),
+    });
+  }
+
+      Future<void> displayPaymentSheet(BuildContext context,Map<String, dynamic> tourData) async {
+    try {
+      _confirmTourStripe(tourData);
+      await Stripe.instance.presentPaymentSheet();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment successful')));
+
+      paymentIntentData = null;
+    } catch (e) {
+      if (e is StripeException) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error from Stripe: ${e.error.localizedMessage}')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unforeseen error: $e')));
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> createPaymentIntent(String amount, String currency) async {
+    try {
+      Map<String, dynamic> body = {
+        'amount': amount,
+        'currency': currency,
+        'payment_method_types[]': 'card'
+      };
+
+      var response = await http.post(
+        Uri.parse('https://api.stripe.com/v1/payment_intents'),
+        headers: {
+          'Authorization': 'Bearer sk_test_51PFI7YP7nb9HAUv5Evy1pPWjOb7ouYXPkEb9UMBIBPhaO47Cd3WltTVudrOmhkEXrh3zvMOMnnq1OPvIlE6jSmaa00OiclqWWH',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body,
+      );
+      return json.decode(response.body);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  String calculateAmount(String amount) {
+    final calculatedAmount = (double.parse(amount) * 100).toInt().toString();
+    return calculatedAmount;
+  }
+
+
+  String _formatTourDate(dynamic tourDate) {
+    if (tourDate is Timestamp) {
+      DateTime dateTime = tourDate.toDate();
+      return DateFormat.yMMMd().format(dateTime);
+    } else if (tourDate is DateTime) {
+      return DateFormat.yMMMd().format(tourDate);
+    } else {
+      return 'Not Available';
+    }
+  }
+
+  void _showPaymentOptionsDialog(BuildContext context, Map<String, dynamic> tourData) async {
     DocumentSnapshot userDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(_auth.currentUser!.uid)
@@ -228,8 +309,6 @@ class TourDetailsPage extends StatelessWidget {
     if (userData != null &&
         userData['bookings'] != null &&
         (userData['bookings'] as List).isNotEmpty) {
-      // User already has a booking, show an error message or take appropriate action
-      // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -251,31 +330,135 @@ class TourDetailsPage extends StatelessWidget {
         },
       );
     } else {
-      // User does not have a booking, proceed to show the booking dialog
-      // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          // Replace with your BookingDialog
-          return BookingDialog(
-            tourName: tourData['tourName'] ?? 'Tour Name Not Available',
-            tourID: tourData['tourId'] ?? 'Tour ID Not Available',
-            tourDate: '',
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            backgroundColor: Colors.white,
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Text(
+                      "Select Payment Method",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.payment, color: Colors.green[700]),
+                    title: Text('Stripe Payment'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      double price = double.tryParse(tourData['price']) ?? 0.0;
+                      makePayment(context, price, tourData);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.account_balance, color: Colors.green[700]),
+                    title: Text('Bank Transfer'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showBankTransferDetails(context, tourData);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.green[700],
+                ),
+                child: const Text('Cancel'),
+              ),
+            ],
           );
         },
       );
     }
   }
 
-  String _formatTourDate(dynamic tourDate) {
-    if (tourDate is Timestamp) {
-      DateTime dateTime = tourDate.toDate();
-      return DateFormat.yMMMd()
-          .format(dateTime); // You can use any desired date format
-    } else if (tourDate is DateTime) {
-      return DateFormat.yMMMd().format(tourDate);
-    } else {
-      return 'Not Available';
-    }
+  void showBankTransferDetails(BuildContext context, Map<String, dynamic> tourData) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          backgroundColor: Colors.white,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(
+                    "Bank Transfer Details",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.account_balance, color: Colors.green[700]),
+                  title: Text('Bank Name: Dummy Bank'),
+                  subtitle: Text('Account Number: 1234567890'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.location_on, color: Colors.green[700]),
+                  title: Text('Branch: Main Branch'),
+                  subtitle: Text('Address: 123 Main Street, City'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                showBookingDialog(context, tourData);
+
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.green[700],
+              ),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
+
+  void showBookingDialog(BuildContext context, Map<String, dynamic> tourData) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BookingDialog(
+          tourName: tourData['tourName'] ?? 'Tour Name Not Available',
+          tourID: tourData['tourId'] ?? 'Tour ID Not Available',
+          tourDate: '', // You need to set the tourDate accordingly
+        );
+      },
+    );
+  }
+
 }
